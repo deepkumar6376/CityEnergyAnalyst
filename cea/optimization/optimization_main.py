@@ -30,7 +30,7 @@ __status__ = "Production"
 
 
 def moo_optimization(locator, weather_file, gv):
-    '''
+    """
     This function optimizes the conversion, storage and distribution systems of a heating distribution for the case study.
     It requires that solar technologies be calculated in advance and nodes of a distribution should have been already generated.
 
@@ -44,7 +44,7 @@ def moo_optimization(locator, weather_file, gv):
     :type gv: class
     :return: none
     :rtype: Nonetype
-    '''
+    """
 
     # read total demand file and names and number of all buildings
     total_demand = pd.read_csv(locator.get_total_demand())

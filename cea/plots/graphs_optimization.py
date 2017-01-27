@@ -120,7 +120,7 @@ def plot_pareto_scenarios(locator, generations, relative):
     savelocation = locator.get_optimization_plots_folder()
 
     # read the checkpoint
-    counter = 0
+    counter = 28
     #for scenario in scenarios:
     pop, eps, testedPop = sFn.readCheckPoint(locator, generations, 0)
 
@@ -407,7 +407,7 @@ def test_graphs_optimization():
 
     # define scenarios and headers
     scenarios = ['BAU', 'CAMP', 'HEB', 'UC']
-    generation = 7
+    generation = 5
     # headers = ["/Volumes/SAMSUNG/paper 3/BAU/", "/Volumes/SAMSUNG/paper 3/CAMP/", "/Volumes/SAMSUNG/paper 3/HEB/", "/Volumes/SAMSUNG/paper 3/UC/"]
     # savelocation = "/Volumes/SAMSUNG/paper 3/Figures/"
     # CodePath = "/Users/jimeno/Documents/Urben/MOO/"

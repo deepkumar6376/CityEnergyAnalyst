@@ -93,7 +93,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     invalid_ind = []
 
     # Evolutionary strategy
-    if genCP is 0:
+    if genCP == 0:
         # create population
         pop = toolbox.population(n=gv.initialInd)
 

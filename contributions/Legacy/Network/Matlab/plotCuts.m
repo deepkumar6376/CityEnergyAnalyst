@@ -26,7 +26,7 @@ function plotCuts(hd,i,figDir,figName)
     grid on;
     xlabel('$\dot{m}$');
     ylabel('$\frac{\Delta p}{L}$');
-    addpath('Aux/laprint');
-    storeSinglePlotLaprint(h,figDir,figName,16,[],[]);
-    rmpath('Aux/laprint');
+    addpath('FlorianAux/laprint');
+%     storeSinglePlotLaprint(h,figDir,figName,16,[],[]);
+    rmpath('FlorianAux/laprint');
 end
