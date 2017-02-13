@@ -9,7 +9,7 @@ from __future__ import division
 import os
 import time
 from pickle import Pickler, Unpickler
-
+import cea.optimization.distribution.network_opt_main as network_opt
 import cea.optimization.conversion_storage.master.evaluation as evaluation_function
 import cea.optimization.conversion_storage.master.generation as generation_function
 import mutations as mut
@@ -32,7 +32,7 @@ __status__ = "Production"
 
 
 def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extra_primary_energy, solar_features,
-                           network_features, gv, genCP = 0):
+                            gv, genCP = 0):
     """
     Evolutionary algorithm to optimize the district energy system's design.
     This algortihm optimizes the size and operation of technologies for a district heating netowrk.
@@ -67,6 +67,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
      subfolders locator.get_optimization_master_results_folder() as a python pickle file.
     :rtype: pickled file
     """
+    network_features = network_opt.network_opt_main()
     t0 = time.clock()
 
     # get number of buildings
