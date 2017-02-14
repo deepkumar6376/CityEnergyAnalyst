@@ -67,34 +67,35 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
      subfolders locator.get_optimization_master_results_folder() as a python pickle file.
     :rtype: pickled file
     """
-    network_features = network_opt.network_opt_main()
-    t0 = time.clock()
-
-    # get number of buildings
-    nBuildings = len(building_names)
-
-    # DEFINE OBJECTIVE FUNCTION
-    def objective_function(ind):
-        (costs, CO2, prim) = evaluation_function.evaluation_main(ind, building_names, locator, extra_costs, extra_CO2, extra_primary_energy, solar_features,
-                                                                 network_features, gv)
-        return (costs, CO2, prim)
-
-    # SET-UP EVOLUTIONARY ALGORITHM
-    # Contains 3 minimization objectives : Costs, CO2 emissions, Primary Energy Needs
-    creator.create("Fitness", base.Fitness, weights=(-1.0, -1.0, -1.0))
-    creator.create("Individual", list, fitness=creator.Fitness)
-    toolbox = base.Toolbox()
-    toolbox.register("generate", generation_function.generate_main, nBuildings, gv)
-    toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.generate)
-    toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-    toolbox.register("evaluate", objective_function)
-
-    ntwList = ["1"*nBuildings]
-    epsInd = []
-    invalid_ind = []
-
     # Evolutionary strategy
     if genCP is 0:
+
+        network_features = network_opt.network_opt_main()
+        t0 = time.clock()
+
+        # get number of buildings
+        nBuildings = len(building_names)
+
+        # DEFINE OBJECTIVE FUNCTION
+        def objective_function(ind):
+            (costs, CO2, prim) = evaluation_function.evaluation_main(ind, building_names, locator, extra_costs,
+                                                                     extra_CO2, extra_primary_energy, solar_features,
+                                                                     network_features, gv)
+            return (costs, CO2, prim)
+
+        # SET-UP EVOLUTIONARY ALGORITHM
+        # Contains 3 minimization objectives : Costs, CO2 emissions, Primary Energy Needs
+        creator.create("Fitness", base.Fitness, weights=(-1.0, -1.0, -1.0))
+        creator.create("Individual", list, fitness=creator.Fitness)
+        toolbox = base.Toolbox()
+        toolbox.register("generate", generation_function.generate_main, nBuildings, gv)
+        toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.generate)
+        toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+        toolbox.register("evaluate", objective_function)
+
+        ntwList = ["1" * nBuildings]
+        epsInd = []
+        invalid_ind = []
         # create population
         pop = toolbox.population(n=gv.initialInd)
 
