@@ -229,7 +229,9 @@ def calc_master_to_slave_variables(individual, Qmax, locator, gv):
     Qnom = Qmax * (1+gv.Qmargin_ntw)
     
     # Heating systems
-    
+    print individual
+    # a = [3, 0.12719054718102862, 1, 0.4085217042864634, 0, 0, 0, 0, 0, 0, 1, 0.464287748532508, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1]
+
     #CHP units with NG & furnace with biomass wet
     if individual[0] == 1 or individual[0] == 3:
         if gv.Furnace_allowed == 1:
