@@ -29,42 +29,6 @@ __email__ = "thomas@arch.ethz.ch"
 __status__ = "Production"
 
 def get_thermal_network_from_shapefile(locator, network_type):
-    """
-    This function reads the existing node and pipe network from a shapefile and produces an edge-node incidence matrix
-    (as defined by Oppelt et al., 2016) as well as the edge properties (length, start node, and end node) and node
-    coordinates.
-
-    Parameters
-    ----------
-    :param locator: an InputLocator instance set to the scenario to work on
-    :param network_type: a string that defines whether the network is a district heating ('DH') or cooling ('DC')
-                         network
-    :type locator: InputLocator
-    :type network_type: str
-
-    Returns
-    -------
-    :return edge_node_df: DataFrame consisting of n rows (number of nodes) and e columns (number of edges) and
-                        indicating direction of flow of each edge e at node n: if e points to n, value is 1; if
-                        e leaves node n, -1; else, 0.                                                           (n x e)
-    :return all_nodes_df: DataFrame that contains all nodes, whether a node is a consumer, plant, or neither,
-                        and, if it is a consumer or plant, the name of the corresponding building               (2 x n)
-    :return edge_df['pipe length']: vector containing the length of each edge in the network                    (1 x e)
-    :rtype edge_node_df: DataFrame
-    :rtype all_nodes_df: DataFrame
-    :rtype edge_df['pipe length']: array
-
-    Side effects
-    ------------
-    The following files are created by this script:
-        - DH_EdgeNode: csv file containing edge_node_df stored in locator.get_optimization_network_layout_folder()
-        - DH_Node_DF: csv file containing all_nodes_df stored in locator.get_optimization_network_layout_folder()
-        - DH_Pipe_DF: csv file containing edge_df stored in locator.get_optimization_network_layout_folder()
-
-    ..[Oppelt, T., et al., 2016] Oppelt, T., et al. Dynamic thermo-hydraulic model of district cooling networks.
-    Applied Thermal Engineering, 2016.
-
-    """
 
     t0 = time.clock()
 
@@ -141,27 +105,11 @@ def get_thermal_network_from_shapefile(locator, network_type):
 
     print (time.clock() - t0, "seconds process time for Network summary\n")
 
+    print edge_node_df, all_nodes_df
+
     return edge_node_df, all_nodes_df, edge_df['pipe length']
 
 def extract_network_from_shapefile(edge_shapefile_df, node_shapefile_df):
-    '''
-    Extracts network data into dataframes for pipes and nodes in the network
-
-    Parameters
-    ----------
-    :param edge_shapefile_df: DataFrame containing all data imported from the edge shapefile
-    :param node_shapefile_df: DataFrame containing all data imported from the node shapefile
-    :type edge_shapefile_df: DataFrame
-    :type node_shapefile_df: DataFrame
-
-    Returns
-    -------
-    :return node_df: DataFrame containing all nodes and their corresponding coordinates
-    :return edge_df: list of edges and their corresponding lengths and start and end nodes
-    :rtype node_df: DataFrame
-    :rtype edge_df: DataFrame
-
-    '''
 
     import numpy as np
 
@@ -201,21 +149,6 @@ def extract_network_from_shapefile(edge_shapefile_df, node_shapefile_df):
             node_dict[end_node] = ['NODE'+str(i), 'TEE' + str(i - len(node_shapefile_df)), 0, 0, end_node]
         edge_dict['EDGE' + str(j)] = [edge_shapefile_df['Shape_Leng'][j], node_dict[start_node][0], node_dict[end_node][0]]
 
-    # # if a consumer node is not connected to the network, find the closest node and connect them with a new edge
-    # # this part of the code was developed for a case in which the node and edge shapefiles were not defined consistently
-    # # This has not been a problem after all, but it could eventually be a useful feature.
-    # for node in node_dict:
-    #     if node not in pipe_nodes:
-    #         min_dist = 1000
-    #         closest_node = pipe_nodes[0]
-    #         for pipe_node in pipe_nodes:
-    #             dist = ((node[0] - pipe_node[0])**2 + (node[1] - pipe_node[1])**2)**.5
-    #             if dist < min_dist:
-    #                 min_dist = dist
-    #                 closest_node = pipe_node
-    #         j += 1
-    #         edge_dict['EDGE' + str(j)] = [min_dist, node_dict[closest_node][0], node_dict[node][0]]
-
     # create dataframes containing all nodes and edges
     node_df = pd.DataFrame.from_dict(node_dict, orient='index')
     node_df.columns = node_columns
@@ -226,37 +159,38 @@ def extract_network_from_shapefile(edge_shapefile_df, node_shapefile_df):
     return node_df, edge_df
 
 def calc_mass_flow_edges(edge_node_df, mass_flow_substation_df):
-    '''
-    This function carries out the steady-state mass flow rate calculation for a predefined network with predefined mass
-    flow rates at each substation based on the method from Todini et al. (1987), Ikonen et al. (2016), Oppelt et al.
-    (2016), etc.
-
-    Parameters
-    ----------
-    :param edge_node_df: DataFrame consisting of n rows (number of nodes) and e columns (number of edges)
-                         and indicating the direction of flow of each edge e at node n: if e points to n,
-                         value is 1; if e leaves node n, -1; else, 0.                                       (n x e)
-    :param: mass_flow_substation_df: DataFrame containing the mass flow rate at each node n at each time
-                                     of the year t                                                          (t x n)
-    :type edge_node_df: DataFrame
-    :type mass_flow_substation_df: DataFrame
-
-    Return
-    ------
-    :return: mass_flow_edge: matrix specifying the mass flow rate at each edge e at the given time step t
-    :type: mass_flow_edge: numpy.ndarray
-
-    ..[Todini & Pilati, 1987] Todini & Pilati. "A gradient method for the analysis of pipe networks," in Computer
-     Applications in Water Supply Volume 1 - Systems Analysis and Simulation, 1987.
-    ..[Ikonen, E., et al, 2016] Ikonen, E., et al. Examination of Operational Optimization at Kemi District Heating Network.
-    Thermal Science. 2016, Vol. 20, No.2, pp.667-678.
-    ..[Oppelt, T., et al., 2016] Oppelt, T., et al. Dynamic thermo-hydraulic model of district cooling networks.
-    Applied Thermal Engineering, 2016.
-
-    '''
 
     # t0 = time.clock()
     mass_flow_edge = np.round(np.transpose(np.linalg.lstsq(edge_node_df.values, np.transpose(mass_flow_substation_df.values))[0]), decimals = 9)
     # print time.clock() - t0, "seconds process time for total mass flow calculation\n"
 
     return mass_flow_edge
+
+def run_as_script(scenario_path=None):
+    import cea.globalvar
+    import cea.inputlocator as inputlocator
+    from geopandas import GeoDataFrame as gpdf
+    from cea.utilities import epwreader
+    from cea.resources import geothermal
+
+    gv = cea.globalvar.GlobalVariables()
+
+    if scenario_path is None:
+        scenario_path = gv.scenario_reference
+
+    locator = inputlocator.InputLocator(scenario_path=scenario_path)
+    weather_file = locator.get_default_weather()
+
+    # add geothermal part of preprocessing
+    T_ambient = epwreader.epw_reader(weather_file)['drybulb_C']
+    gv.ground_temperature = geothermal.calc_ground_temperature(T_ambient.values, gv)
+
+    # add options for data sources: heating or cooling network, csv or shapefile
+    network_type = ['DH', 'DC'] # set to either 'DH' or 'DC'
+    source = ['shapefile'] # set to csv or shapefile
+
+    get_thermal_network_from_shapefile(locator, network_type)
+    print ('test thermal_network_main() succeeded')
+
+if __name__ == '__main__':
+    run_as_script()
