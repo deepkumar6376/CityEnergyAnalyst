@@ -129,10 +129,7 @@ def run_as_script(scenario_path=None):
     network_type = ['DH', 'DC'] # set to either 'DH' or 'DC'
     source = ['csv', 'shapefile'] # set to csv or shapefile
 
-    network_edges_df = gpd.read_file(locator.get_network_layout_pipes_csv_file(network_type[0]))
-    network_nodes_df = gpd.read_file(locator.get_network_layout_nodes_csv_file(network_type[0]))
-
-    get_thermal_network_from_csv(network_edges_df, network_nodes_df)
+    get_thermal_network_from_csv(locator, network_type[0])
     print ('test thermal_network_main() succeeded')
 
 if __name__ == '__main__':
