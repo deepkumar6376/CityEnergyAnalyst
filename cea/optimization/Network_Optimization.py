@@ -1,35 +1,64 @@
 from __future__ import print_function
-
-"""
-============================
-Hydraulic - thermal network
-============================
-
-"""
 from __future__ import division
-import time
+
 import numpy as np
 import pandas as pd
-from cea.technologies.substation import substation_main
-import cea.technologies.substation_matrix as substation
-import math
-import cea.globalvar as gv
-from cea.utilities import epwreader
-from cea.resources import geothermal
-import os
-from scipy.linalg import block_diag
-import scipy
-import geopandas as gpd
+import time
 
-
-__author__ = "Martin Mosteiro Romero, Shanshan Hsieh"
+__author__ = "Sreepathi Bhargava Krishna"
 __copyright__ = "Copyright 2016, Architecture and Building Systems - ETH Zurich"
-__credits__ = ["Martin Mosteiro Romero", "Shanshan Hsieh" ]
+__credits__ = ["Sreepathi Bhargava Krishna"]
 __license__ = "MIT"
 __version__ = "0.1"
 __maintainer__ = "Daren Thomas"
 __email__ = "thomas@arch.ethz.ch"
 __status__ = "Production"
+
+def network_optimization():
+
+    import array, random
+    from deap import creator, base, tools, algorithms
+
+    creator.create("FitnessMax", base.Fitness, weights=(-1.0, -1.0, -1.0))
+    creator.create("Individual", list, fitness=creator.Fitness)
+
+    def objective_function(individual):
+        return sum(individual), sum(individual), sum(individual)
+
+    def generate_main(individual):
+        return individual
+
+
+    toolbox = base.Toolbox()
+    toolbox.register("generate", generate_main)
+    toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.generate)
+    toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+    toolbox.register("evaluate", objective_function)
+
+    toolbox = base.Toolbox()
+
+    toolbox.register("attr_bool", random.randint, 0, 1)
+    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_bool, 100)
+    toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+
+
+
+    toolbox.register("evaluate", evalOneMax)
+    toolbox.register("mate", tools.cxTwoPoint)
+    toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
+    toolbox.register("select", tools.selTournament, tournsize=3)
+
+    population = toolbox.population(n=300)
+
+    NGEN = 40
+    for gen in range(NGEN):
+        offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.1)
+        fits = toolbox.map(toolbox.evaluate, offspring)
+        for fit, ind in zip(fits, offspring):
+            ind.fitness.values = fit
+        population = offspring
+
+    return 0
 
 def get_thermal_network_from_csv(locator, network_type):
     """
