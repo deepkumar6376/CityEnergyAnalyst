@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 import time
 
+np.set_printoptions(threshold=np.nan)
+
 __author__ = "Sreepathi Bhargava Krishna"
 __copyright__ = "Copyright 2016, Architecture and Building Systems - ETH Zurich"
 __credits__ = ["Sreepathi Bhargava Krishna"]
@@ -20,13 +22,11 @@ def network_optimization():
     from deap import creator, base, tools, algorithms
 
     creator.create("FitnessMax", base.Fitness, weights=(-1.0, -1.0, -1.0))
-    creator.create("Individual", list, fitness=creator.Fitness)
+    creator.create("Individual", list, fitness=creator.FitnessMax)
 
     def objective_function(individual):
         return sum(individual), sum(individual), sum(individual)
 
-    def generate_main(individual):
-        return individual
 
 
     toolbox = base.Toolbox()
@@ -34,16 +34,6 @@ def network_optimization():
     toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.generate)
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     toolbox.register("evaluate", objective_function)
-
-    toolbox = base.Toolbox()
-
-    toolbox.register("attr_bool", random.randint, 0, 1)
-    toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_bool, 100)
-    toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-
-
-
-    toolbox.register("evaluate", evalOneMax)
     toolbox.register("mate", tools.cxTwoPoint)
     toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
     toolbox.register("select", tools.selTournament, tournsize=3)
@@ -57,6 +47,7 @@ def network_optimization():
         for fit, ind in zip(fits, offspring):
             ind.fitness.values = fit
         population = offspring
+
 
     return 0
 
@@ -132,6 +123,50 @@ def get_thermal_network_from_csv(locator, network_type):
 
     return edge_node_df, all_nodes_df, pipe_data_df['LENGTH']
 
+
+def generate_main(locator, network_type):
+
+    from random import randint
+
+
+    node_data_df = pd.read_csv(locator.get_network_layout_nodes_csv_file(network_type))
+    pipe_data_df = pd.read_csv(locator.get_network_layout_pipes_csv_file(network_type))
+
+    # create consumer and plant node vectors from node data
+    for column in ['Plant', 'Sink']:
+        if type(node_data_df[column][0]) != int:
+           node_data_df[column] = node_data_df[column].astype(int)
+    node_names = node_data_df['DC_ID'].values
+    consumer_nodes = np.vstack((node_names,(node_data_df['Sink']*node_data_df['Name']).values))
+    plant_nodes = np.vstack((node_names,(node_data_df['Plant']*node_data_df['Name']).values))
+
+    # create edge-node matrix from pipe data
+    pipe_data_df = pipe_data_df.set_index(pipe_data_df['DC_ID'].values, drop=True)
+    list_pipes = pipe_data_df['DC_ID']
+    list_nodes = sorted(set(pipe_data_df['NODE1']).union(set(pipe_data_df['NODE2'])))
+    edge_node_full_matrix = np.zeros((len(list_nodes),len(list_pipes)))
+
+    for j in range(len(list_pipes)):
+        for i in range(len(list_nodes)):
+            if pipe_data_df['NODE2'][j] == list_nodes[i]:
+                edge_node_full_matrix[i][j] = 1
+            elif pipe_data_df['NODE1'][j] == list_nodes[i]:
+                edge_node_full_matrix[i][j] = -1
+
+    edge_node_matrix = np.zeros((len(list_nodes), len(list_pipes)))
+
+    for j in range(len(list_pipes)):
+        for i in range(len(list_nodes)):
+                edge_node_matrix[i][j] = randint(-1,1)
+
+    for j in range(len(list_pipes)):
+        for i in range(len(list_nodes)):
+            if abs(edge_node_matrix[i][j]) != abs(edge_node_full_matrix[i][j]):
+                edge_node_matrix[i][j] = 0
+
+    print ((edge_node_matrix == edge_node_full_matrix).all())
+    return edge_node_matrix
+
 def run_as_script(scenario_path=None):
     """
     run the whole network summary routine
@@ -160,6 +195,9 @@ def run_as_script(scenario_path=None):
 
     get_thermal_network_from_csv(locator, network_type[0])
     print ('test thermal_network_main() succeeded')
+    a = generate_main(locator,network_type[0])
+    # print (a)
+
 
 if __name__ == '__main__':
     run_as_script()

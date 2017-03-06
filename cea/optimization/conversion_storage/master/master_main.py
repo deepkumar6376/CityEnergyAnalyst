@@ -12,8 +12,8 @@ from pickle import Pickler, Unpickler
 
 import cea.optimization.conversion_storage.master.evaluation as evaluation_function
 import cea.optimization.conversion_storage.master.generation as generation_function
-import mutations as mut
-import selection as sel
+import cea.optimization.conversion_storage.master.mutations as mut
+import cea.optimization.conversion_storage.master.selection as sel
 from deap import base
 from deap import creator
 from deap import tools
