@@ -4,8 +4,11 @@ from __future__ import division
 import numpy as np
 import pandas as pd
 import time
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 np.set_printoptions(threshold=np.nan)
+
 
 __author__ = "Sreepathi Bhargava Krishna"
 __copyright__ = "Copyright 2016, Architecture and Building Systems - ETH Zurich"
@@ -16,29 +19,30 @@ __maintainer__ = "Daren Thomas"
 __email__ = "thomas@arch.ethz.ch"
 __status__ = "Production"
 
-def network_optimization():
+def network_optimization(edge_node_matrix, locator, network_type):
 
     import array, random
     from deap import creator, base, tools, algorithms
 
     creator.create("FitnessMax", base.Fitness, weights=(-1.0, -1.0, -1.0))
     creator.create("Individual", list, fitness=creator.FitnessMax)
+    a = []
 
     def objective_function(individual):
-        return sum(individual), sum(individual), sum(individual)
+        return np.std(individual), np.mean(individual), np.sum(individual)
 
 
 
     toolbox = base.Toolbox()
-    toolbox.register("generate", generate_main)
+    toolbox.register("generate", generate_main, edge_node_matrix, locator, network_type)
     toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.generate)
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     toolbox.register("evaluate", objective_function)
     toolbox.register("mate", tools.cxTwoPoint)
     toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
-    toolbox.register("select", tools.selTournament, tournsize=3)
+    toolbox.register("select", tools.selTournament, tournsize=5)
 
-    population = toolbox.population(n=300)
+    population = toolbox.population(n=10)
 
     NGEN = 40
     for gen in range(NGEN):
@@ -47,6 +51,21 @@ def network_optimization():
         for fit, ind in zip(fits, offspring):
             ind.fitness.values = fit
         population = offspring
+        a.append(ind.fitness.values)
+        # print (ind.fitness)
+    print (a[0][0])
+    b = []
+    c = []
+    d = []
+    for i in range(len(a)):
+        b.append(a[i][0])
+        c.append(a[i][1])
+        d.append(a[i][2])
+
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.scatter(b,c,d)
+    plt.show()
 
 
     return 0
@@ -121,10 +140,10 @@ def get_thermal_network_from_csv(locator, network_type):
 
     print (time.clock() - t0, "seconds process time for Network summary\n")
 
-    return edge_node_df, all_nodes_df, pipe_data_df['LENGTH']
+    return edge_node_matrix, all_nodes_df, pipe_data_df['LENGTH']
 
 
-def generate_main(locator, network_type):
+def generate_main(edge_node_full_matrix, locator, network_type):
 
     from random import randint
 
@@ -144,14 +163,6 @@ def generate_main(locator, network_type):
     pipe_data_df = pipe_data_df.set_index(pipe_data_df['DC_ID'].values, drop=True)
     list_pipes = pipe_data_df['DC_ID']
     list_nodes = sorted(set(pipe_data_df['NODE1']).union(set(pipe_data_df['NODE2'])))
-    edge_node_full_matrix = np.zeros((len(list_nodes),len(list_pipes)))
-
-    for j in range(len(list_pipes)):
-        for i in range(len(list_nodes)):
-            if pipe_data_df['NODE2'][j] == list_nodes[i]:
-                edge_node_full_matrix[i][j] = 1
-            elif pipe_data_df['NODE1'][j] == list_nodes[i]:
-                edge_node_full_matrix[i][j] = -1
 
     edge_node_matrix = np.zeros((len(list_nodes), len(list_pipes)))
 
@@ -163,8 +174,7 @@ def generate_main(locator, network_type):
         for i in range(len(list_nodes)):
             if abs(edge_node_matrix[i][j]) != abs(edge_node_full_matrix[i][j]):
                 edge_node_matrix[i][j] = 0
-
-    print ((edge_node_matrix == edge_node_full_matrix).all())
+    edge_node_matrix = edge_node_matrix.flatten()
     return edge_node_matrix
 
 def run_as_script(scenario_path=None):
@@ -185,6 +195,7 @@ def run_as_script(scenario_path=None):
     locator = inputlocator.InputLocator(scenario_path=scenario_path)
     weather_file = locator.get_default_weather()
 
+
     # add geothermal part of preprocessing
     T_ambient = epwreader.epw_reader(weather_file)['drybulb_C']
     gv.ground_temperature = geothermal.calc_ground_temperature(T_ambient.values, gv)
@@ -193,10 +204,11 @@ def run_as_script(scenario_path=None):
     network_type = ['DH', 'DC'] # set to either 'DH' or 'DC'
     source = ['csv', 'shapefile'] # set to csv or shapefile
 
-    get_thermal_network_from_csv(locator, network_type[0])
+    edge_node_matrix, all_nodes_df, pipe_data_df = get_thermal_network_from_csv(locator, network_type[0])
     print ('test thermal_network_main() succeeded')
-    a = generate_main(locator,network_type[0])
+    a = generate_main(edge_node_matrix, locator, network_type[0])
     # print (a)
+    network_optimization(edge_node_matrix, locator, network_type[0])
 
 
 if __name__ == '__main__':
