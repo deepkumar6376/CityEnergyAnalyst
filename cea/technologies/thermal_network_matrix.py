@@ -689,7 +689,7 @@ def  solve_network_temperatures(locator, gv, T_ground, edge_node_df, all_nodes_d
     else:
         T_supply_nodes = np.full(edge_node_df.shape[0], np.nan)
         T_return_nodes = np.full(edge_node_df.shape[0], np.nan)
-        plant_heat_requirement = 0
+        plant_heat_requirement = [0]
 
     return T_supply_nodes, T_return_nodes, plant_heat_requirement, edge_mass_flow_df
 
