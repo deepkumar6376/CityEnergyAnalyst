@@ -15,6 +15,7 @@ import cea.optimization.master.evaluation as evaluation
 from deap import base
 from deap import creator
 from deap import tools
+import multiprocessing
 
 import cea.optimization.master.generation as generation
 import mutations as mut
@@ -86,6 +87,8 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.generate)
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     toolbox.register("evaluate", objective_function)
+    pool = multiprocessing.Pool()
+    toolbox.register("map", pool.map())
 
     ntwList = ["1"*nBuildings]
     epsInd = []
