@@ -88,7 +88,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     toolbox.register("evaluate", objective_function)
     pool = multiprocessing.Pool()
-    toolbox.register("map", pool.map())
+    joblist = []
 
     ntwList = ["1"*nBuildings]
     epsInd = []
@@ -106,6 +106,14 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
         # Evaluate the initial population
         print "Evaluate initial population"
         fitnesses = map(toolbox.evaluate, pop)
+
+        for ind in pop:
+            job = pool.apply_async(objective_function, [ind])
+            joblist.append(job)
+
+        for job in enumerate(joblist):
+            print (job)
+        pool.close()
 
         for ind, fit in zip(pop, fitnesses):
             ind.fitness.values = fit
