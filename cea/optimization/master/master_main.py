@@ -113,7 +113,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
         os.chdir(locator.get_optimization_master_results_folder())
         with open("CheckPointInitial","wb") as CPwrite:
             CPpickle = Pickler(CPwrite)
-            cp = dict(population=pop, generation=0, networkList = ntwList, epsIndicator = [], testedPop = [])
+            cp = dict(population=pop, generation=0, networkList = ntwList, epsIndicator = [], testedPop = [], objective = fitnesses)
             CPpickle.dump(cp)
     else:
         print "Recover from CP " + str(genCP) + "\n"
@@ -211,6 +211,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
             
             print "Create CheckPoint", g, "\n"
             with open("CheckPoint" + str(g),"wb") as CPwrite:
+                fitnesses = map(toolbox.evaluate, pop)
                 CPpickle = Pickler(CPwrite)
                 cp = dict(population=pop, generation=g, networkList = ntwList, epsIndicator = epsInd, testedPop = invalid_ind)
                 CPpickle.dump(cp)
