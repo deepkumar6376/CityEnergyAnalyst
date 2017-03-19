@@ -3,7 +3,7 @@ def test_graphs_optimization():
     import cea.inputlocator
     import csv
     import matplotlib.pyplot as plt
-
+    from mpl_toolkits.mplot3d import Axes3D
     import os
     import re
 
@@ -15,6 +15,9 @@ def test_graphs_optimization():
 
     with open("CheckPointcsv" + str(generation), "rb") as csv_file:
         pareto = []
+        xs = []
+        ys = []
+        zs = []
         reader = csv.reader(csv_file)
         mydict = dict(reader)
         objective_function = mydict['objective_function_values']
@@ -23,14 +26,22 @@ def test_graphs_optimization():
         for i in xrange(gv.initialInd):
             pareto_intermediate = [objective_function[3*i], objective_function[3*i + 1], objective_function[3*i + 2]]
             pareto.append(pareto_intermediate)
-
-        print (pareto)
-
-
-
+            xs.append(float(objective_function[3*i]))
+            ys.append(float(objective_function[3*i + 1]))
+            zs.append(float(objective_function[3*i + 2]))
 
 
-
+        # print (pareto)
+        # print (xs)
+        # print (zs)
+        # print (ys)
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.scatter(xs, ys, zs, c='r', marker='o')
+        ax.set_xlabel('X Label')
+        ax.set_ylabel('Y Label')
+        ax.set_zlabel('Z Label')
+        plt.show()
 
 if __name__ == '__main__':
     test_graphs_optimization()

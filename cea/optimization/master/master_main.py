@@ -119,11 +119,6 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
             for key, value in cp.items():
                 writer.writerow([key, value])
 
-
-        # with open("CheckPointInitial","wb") as CPwrite:
-        #     CPpickle = Pickler(CPwrite)
-        #     cp = dict(population=pop, generation=0, networkList = ntwList, epsIndicator = [], testedPop = [], objective_function_values = fitnesses)
-        #     CPpickle.dump(cp)
     else:
         print "Recover from CP " + str(genCP) + "\n"
         os.chdir(locator.get_optimization_master_results_folder())
@@ -226,12 +221,6 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
                 for key, value in cp.items():
                     writer.writerow([key, value])
 
-            # with open("CheckPoint" + str(g),"wb") as CPwrite:
-            #     fitnesses = map(toolbox.evaluate, pop)
-            #     CPpickle = Pickler(CPwrite)
-            #     cp = dict(population=pop, generation=g, networkList = ntwList, epsIndicator = epsInd, testedPop = invalid_ind, objective_function_values = fitnesses)
-            #     CPpickle.dump(cp)
-
     if g == gv.NGEN:
         print "Final Generation reached"
     else:
@@ -248,12 +237,6 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
         cp = dict(population=pop, generation=0, objective_function_values=fitnesses)
         for key, value in cp.items():
             writer.writerow([key, value])
-
-    # with open("CheckPointFinal","wb") as CPwrite:
-    #     fitnesses = map(toolbox.evaluate, pop)
-    #     CPpickle = Pickler(CPwrite)
-    #     cp = dict(population=pop, generation=g, networkList = ntwList, epsIndicator = epsInd, testedPop = invalid_ind, objective_function_values = fitnesses)
-    #     CPpickle.dump(cp)
         
     print "Master Work Complete \n"
     
