@@ -9,6 +9,7 @@ from __future__ import division
 import os
 import time
 from pickle import Pickler, Unpickler
+import csv
 
 import cea.optimization.master.crossover as cx
 import cea.optimization.master.evaluation as evaluation
@@ -111,10 +112,18 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
         # Save initial population
         print "Save Initial population \n"
         os.chdir(locator.get_optimization_master_results_folder())
-        with open("CheckPointInitial","wb") as CPwrite:
-            CPpickle = Pickler(CPwrite)
-            cp = dict(population=pop, generation=0, networkList = ntwList, epsIndicator = [], testedPop = [], objective = fitnesses)
-            CPpickle.dump(cp)
+        with open("CheckPointInitialcsv", "wb") as csv_file:
+            fitnesses = map(toolbox.evaluate, pop)
+            writer = csv.writer(csv_file)
+            cp = dict(population=pop, generation=0, objective_function_values=fitnesses)
+            for key, value in cp.items():
+                writer.writerow([key, value])
+
+
+        # with open("CheckPointInitial","wb") as CPwrite:
+        #     CPpickle = Pickler(CPwrite)
+        #     cp = dict(population=pop, generation=0, networkList = ntwList, epsIndicator = [], testedPop = [], objective_function_values = fitnesses)
+        #     CPpickle.dump(cp)
     else:
         print "Recover from CP " + str(genCP) + "\n"
         os.chdir(locator.get_optimization_master_results_folder())
@@ -210,11 +219,18 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
             os.chdir(locator.get_optimization_master_results_folder())
             
             print "Create CheckPoint", g, "\n"
-            with open("CheckPoint" + str(g),"wb") as CPwrite:
+            with open("CheckPointcsv" + str(g),"wb") as csv_file:
                 fitnesses = map(toolbox.evaluate, pop)
-                CPpickle = Pickler(CPwrite)
-                cp = dict(population=pop, generation=g, networkList = ntwList, epsIndicator = epsInd, testedPop = invalid_ind, objective = fitnesses)
-                CPpickle.dump(cp)
+                writer = csv.writer(csv_file)
+                cp = dict(population=pop, generation=g, objective_function_values=fitnesses)
+                for key, value in cp.items():
+                    writer.writerow([key, value])
+
+            # with open("CheckPoint" + str(g),"wb") as CPwrite:
+            #     fitnesses = map(toolbox.evaluate, pop)
+            #     CPpickle = Pickler(CPwrite)
+            #     cp = dict(population=pop, generation=g, networkList = ntwList, epsIndicator = epsInd, testedPop = invalid_ind, objective_function_values = fitnesses)
+            #     CPpickle.dump(cp)
 
     if g == gv.NGEN:
         print "Final Generation reached"
@@ -225,12 +241,19 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     print "Save final results. " + str(len(pop)) + " individuals in final population"
     print "Epsilon indicator", epsInd, "\n"
     os.chdir(locator.get_optimization_master_results_folder())
-    
-    with open("CheckPointFinal","wb") as CPwrite:
+
+    with open("CheckPointFinalcsv", "wb") as csv_file:
         fitnesses = map(toolbox.evaluate, pop)
-        CPpickle = Pickler(CPwrite)
-        cp = dict(population=pop, generation=g, networkList = ntwList, epsIndicator = epsInd, testedPop = invalid_ind, objective = fitnesses)
-        CPpickle.dump(cp)
+        writer = csv.writer(csv_file)
+        cp = dict(population=pop, generation=0, objective_function_values=fitnesses)
+        for key, value in cp.items():
+            writer.writerow([key, value])
+
+    # with open("CheckPointFinal","wb") as CPwrite:
+    #     fitnesses = map(toolbox.evaluate, pop)
+    #     CPpickle = Pickler(CPwrite)
+    #     cp = dict(population=pop, generation=g, networkList = ntwList, epsIndicator = epsInd, testedPop = invalid_ind, objective_function_values = fitnesses)
+    #     CPpickle.dump(cp)
         
     print "Master Work Complete \n"
     
