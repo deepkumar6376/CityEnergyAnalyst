@@ -112,7 +112,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
         # Save initial population
         print "Save Initial population \n"
         os.chdir(locator.get_optimization_master_results_folder())
-        with open("CheckPointInitialcsv", "wb") as csv_file:
+        with open("CheckPointInitial", "wb") as csv_file:
             fitnesses = map(toolbox.evaluate, pop)
             writer = csv.writer(csv_file)
             cp = dict(population=pop, generation=0, objective_function_values=fitnesses)
@@ -214,7 +214,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
             os.chdir(locator.get_optimization_master_results_folder())
             
             print "Create CheckPoint", g, "\n"
-            with open("CheckPointcsv" + str(g),"wb") as csv_file:
+            with open("CheckPoint" + str(g),"wb") as csv_file:
                 fitnesses = map(toolbox.evaluate, pop)
                 writer = csv.writer(csv_file)
                 cp = dict(population=pop, generation=g, objective_function_values=fitnesses)
@@ -231,7 +231,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     print "Epsilon indicator", epsInd, "\n"
     os.chdir(locator.get_optimization_master_results_folder())
 
-    with open("CheckPointFinalcsv", "wb") as csv_file:
+    with open("CheckPointFinal", "wb") as csv_file:
         fitnesses = map(toolbox.evaluate, pop)
         writer = csv.writer(csv_file)
         cp = dict(population=pop, generation=0, objective_function_values=fitnesses)

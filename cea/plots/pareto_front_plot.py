@@ -10,7 +10,7 @@ def test_graphs_optimization():
     gv = cea.globalvar.GlobalVariables()
     scenario_path = gv.scenario_reference
     locator = cea.inputlocator.InputLocator(scenario_path)
-    generation = 1
+    generation = 4
     os.chdir(locator.get_optimization_master_results_folder())
 
     with open("CheckPointcsv" + str(generation), "rb") as csv_file:
