@@ -2,6 +2,8 @@ def test_graphs_optimization():
     import cea.globalvar
     import cea.inputlocator
     import csv
+    import matplotlib
+    import matplotlib.cm as cmx
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
     import os
@@ -10,7 +12,7 @@ def test_graphs_optimization():
     gv = cea.globalvar.GlobalVariables()
     scenario_path = gv.scenario_reference
     locator = cea.inputlocator.InputLocator(scenario_path)
-    generation = 4
+    generation = 7
     os.chdir(locator.get_optimization_master_results_folder())
 
     with open("CheckPoint" + str(generation), "rb") as csv_file:
@@ -39,6 +41,26 @@ def test_graphs_optimization():
         os.chdir(locator.get_optimization_plots_folder())
         plt.savefig("Generation" + str(generation) + "Pareto_Front.png")
         plt.show()
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        cm = plt.get_cmap('jet')
+        cNorm = matplotlib.colors.Normalize(vmin=min(zs), vmax=max(zs))
+        scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=cm)
+        ax.scatter(xs, ys, c=scalarMap.to_rgba(zs), s=50, alpha=0.8)
+        ax.set_xlabel('X Label')
+        ax.set_ylabel('Y Label')
+
+        scalarMap.set_array(zs)
+        fig.colorbar(scalarMap, label='Z Label')
+        plt.grid(True)
+        plt.rcParams['figure.figsize'] = (6, 4)
+        plt.rcParams.update({'font.size': 12})
+        plt.gcf().subplots_adjust(bottom=0.15)
+        plt.savefig("Generation" + str(generation) + "Pareto_Front_2D.png")
+        plt.show()
+        plt.clf()
+
 
 
 if __name__ == '__main__':
