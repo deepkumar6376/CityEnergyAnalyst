@@ -13,7 +13,7 @@ def test_graphs_optimization():
     generation = 4
     os.chdir(locator.get_optimization_master_results_folder())
 
-    with open("CheckPointcsv" + str(generation), "rb") as csv_file:
+    with open("CheckPoint" + str(generation), "rb") as csv_file:
         pareto = []
         xs = []
         ys = []
