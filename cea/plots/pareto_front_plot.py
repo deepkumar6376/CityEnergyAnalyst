@@ -30,18 +30,16 @@ def test_graphs_optimization():
             ys.append(float(objective_function[3*i + 1]))
             zs.append(float(objective_function[3*i + 2]))
 
-
-        # print (pareto)
-        # print (xs)
-        # print (zs)
-        # print (ys)
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
         ax.scatter(xs, ys, zs, c='r', marker='o')
         ax.set_xlabel('X Label')
         ax.set_ylabel('Y Label')
         ax.set_zlabel('Z Label')
+        os.chdir(locator.get_optimization_plots_folder())
+        plt.savefig("Generation" + str(generation) + "Pareto_Front.png")
         plt.show()
+
 
 if __name__ == '__main__':
     test_graphs_optimization()
