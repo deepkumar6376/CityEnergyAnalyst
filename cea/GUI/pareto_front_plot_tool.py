@@ -11,8 +11,8 @@ __status__ = "Production"
 
 class ScenarioPlotsTool(object):
     def __init__(self):
-        self.label = 'Scenario Plots'
-        self.description = 'Create summary plots of scenarios in a folder'
+        self.label = 'Pareto Front Plot Tool'
+        self.description = 'Create Pareto plots of various generations in a folder'
         self.canRunInBackground = False
 
     def getParameterInfo(self):
