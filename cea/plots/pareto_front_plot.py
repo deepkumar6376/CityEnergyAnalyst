@@ -1,4 +1,4 @@
-def configDesign():
+def configDesign(generation):
     import cea.globalvar
     import cea.inputlocator
     import csv
@@ -13,7 +13,6 @@ def configDesign():
     scenario_path = gv.scenario_reference
     locator = cea.inputlocator.InputLocator(scenario_path)
     os.chdir(locator.get_optimization_master_results_folder())
-    generation = 10
     with open("CheckPoint" + str(generation), "rb") as csv_file:
         reader = csv.reader(csv_file)
         mydict = dict(reader)
@@ -76,7 +75,7 @@ def configDesign():
     plt.rcParams.update({'font.size':10})
     plt.show()
 
-def test_graphs_optimization():
+def test_graphs_optimization(generation):
     import cea.globalvar
     import cea.inputlocator
     import csv
@@ -90,7 +89,6 @@ def test_graphs_optimization():
     gv = cea.globalvar.GlobalVariables()
     scenario_path = gv.scenario_reference
     locator = cea.inputlocator.InputLocator(scenario_path)
-    generation = 'all'
     os.chdir(locator.get_optimization_master_results_folder())
     pareto = []
     xs = []
@@ -188,5 +186,6 @@ def test_graphs_optimization():
 
 
 if __name__ == '__main__':
-    configDesign()
-    test_graphs_optimization()
+    generation = 'all'
+    # configDesign(generation)
+    test_graphs_optimization(generation)
