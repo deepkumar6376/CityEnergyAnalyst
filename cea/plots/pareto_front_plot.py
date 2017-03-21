@@ -17,11 +17,6 @@ def configDesign(generation):
         reader = csv.reader(csv_file)
         mydict = dict(reader)
         pop = mydict['population']
-        # print (pop)
-        # print (type(pop))
-        # def extract(string, start = '[', stop = ']'):
-        #     return string[string.index(start)+1:string.index(stop)+1]
-        # print (extract(pop))
         m = re.findall(r"\[.*?\]", pop)
         for i in xrange(len(m)):
             m[i] = re.findall(r'\d+(?:\.\d+)?', m[i])
@@ -186,6 +181,6 @@ def test_graphs_optimization(generation):
 
 
 if __name__ == '__main__':
-    generation = 'all'
-    # configDesign(generation)
-    test_graphs_optimization(generation)
+    generation = 5
+    configDesign(generation)
+    # test_graphs_optimization(generation)
