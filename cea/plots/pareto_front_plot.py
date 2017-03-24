@@ -110,7 +110,7 @@ def test_graphs_optimization(generation):
         ax.set_ylabel('Y Label')
         ax.set_zlabel('Z Label')
         os.chdir(locator.get_optimization_plots_folder())
-        plt.savefig("Generation" + str(generation) + "Pareto_Front.png")
+        plt.savefig("Generation" + str(generation) + "Pareto_Front_3D.png")
         plt.show()
 
         fig = plt.figure()
@@ -156,8 +156,8 @@ def test_graphs_optimization(generation):
             ax.set_ylabel('Y Label')
             ax.set_zlabel('Z Label')
             os.chdir(locator.get_optimization_plots_folder())
-            plt.savefig("Generation" + str(generation) + "Pareto_Front.png")
-            plt.show()
+            plt.savefig("Generation" + str(generation) + "Pareto_Front_3D.png")
+            # plt.show()
 
             fig = plt.figure()
             ax = fig.add_subplot(111)
@@ -175,12 +175,12 @@ def test_graphs_optimization(generation):
             plt.rcParams.update({'font.size': 12})
             plt.gcf().subplots_adjust(bottom=0.15)
             plt.savefig("Generation" + str(generation) + "Pareto_Front_2D.png")
-            plt.show()
+            # plt.show()
             plt.clf()
 
 
 
 if __name__ == '__main__':
-    generation = 5
-    configDesign(generation)
-    # test_graphs_optimization(generation)
+    generation = 'all'
+    # configDesign(generation)
+    test_graphs_optimization(generation)
