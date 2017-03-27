@@ -238,8 +238,8 @@ def uncertainty_analysis_graphs(runs):
 
     plt.figure()
     plt.subplot(111)
-    # plt.plot(xs,ys, 's')
-    # plt.subplot(111)
+    plt.plot(xs,ys, 's')
+    plt.subplot(111)
     plt.plot(xas, yas, 's')
     plt.grid(True)
     plt.rcParams['figure.figsize'] = (6, 4)
@@ -276,4 +276,4 @@ if __name__ == '__main__':
     generation = 'all'
     # configDesign(generation)
     # test_graphs_optimization(generation)
-    uncertainty_analysis_graphs(112)
+    uncertainty_analysis_graphs(1)
