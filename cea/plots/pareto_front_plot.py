@@ -178,9 +178,102 @@ def test_graphs_optimization(generation):
             # plt.show()
             plt.clf()
 
+def uncertainty_analysis_graphs(runs):
+    import cea.globalvar
+    import cea.inputlocator
+    import csv
+    import matplotlib
+    import matplotlib.cm as cmx
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+    import os
+    import re
+
+    gv = cea.globalvar.GlobalVariables()
+    scenario_path = gv.scenario_reference
+    locator = cea.inputlocator.InputLocator(scenario_path)
+    os.chdir(locator.get_optimization_master_results_folder())
+    pareto = []
+    xs = []
+    ys = []
+    zs = []
+
+    for i in xrange(runs):
+        with open("CheckPointTesting_uncertainty_" + str(i), "rb") as csv_file:
+            reader = csv.reader(csv_file)
+            mydict = dict(reader)
+            objective_function = mydict['objective_function_values']
+            objective_function = re.findall(r'\d+\.\d+', objective_function)
+            for j in xrange(20):
+                pareto_intermediate = [objective_function[3 * j], objective_function[3 * j + 1],
+                                        objective_function[3 * j + 2]]
+                pareto.append(pareto_intermediate)
+                xs.append(float(objective_function[3 * j]))
+                ys.append(float(objective_function[3 * j + 1]))
+                zs.append(float(objective_function[3 * j + 2]))
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(xs, ys, zs, c='r', marker='o')
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+    xas = []
+    yas = []
+    zas = []
+    with open("CheckPointFinal", "rb") as csv_file:
+        reader = csv.reader(csv_file)
+        mydict = dict(reader)
+        objective_function = mydict['objective_function_values']
+        objective_function = re.findall(r'\d+\.\d+', objective_function)
+        for j in xrange(20):
+            pareto_intermediate = [objective_function[3 * j], objective_function[3 * j + 1],
+                                   objective_function[3 * j + 2]]
+            pareto.append(pareto_intermediate)
+            xas.append(float(objective_function[3 * j]))
+            yas.append(float(objective_function[3 * j + 1]))
+            zas.append(float(objective_function[3 * j + 2]))
+    os.chdir(locator.get_optimization_plots_folder())
+    plt.savefig("Uncertainty Pareto_Front_3D.png")
+    plt.show()
+
+    plt.figure()
+    plt.subplot(111)
+    # plt.plot(xs,ys, 's')
+    # plt.subplot(111)
+    plt.plot(xas, yas, 's')
+    plt.grid(True)
+    plt.rcParams['figure.figsize'] = (6, 4)
+    plt.rcParams.update({'font.size': 12})
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.savefig("Uncertainty.png")
+    plt.show()
+
+
+
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    cm = plt.get_cmap('jet')
+    cNorm = matplotlib.colors.Normalize(vmin=min(zs), vmax=max(zs))
+    scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=cm)
+    ax.scatter(xs, ys, c=scalarMap.to_rgba(zs), s=50, alpha=0.8)
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+
+    scalarMap.set_array(zs)
+    fig.colorbar(scalarMap, label='Z Label')
+    plt.grid(True)
+    plt.rcParams['figure.figsize'] = (6, 4)
+    plt.rcParams.update({'font.size': 12})
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.savefig("Generation Pareto_Front_2D.png")
+    plt.show()
+    plt.clf()
+
 
 
 if __name__ == '__main__':
     generation = 'all'
     # configDesign(generation)
-    test_graphs_optimization(generation)
+    # test_graphs_optimization(generation)
+    uncertainty_analysis_graphs(112)
