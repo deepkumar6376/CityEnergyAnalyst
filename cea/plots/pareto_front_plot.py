@@ -185,6 +185,7 @@ def uncertainty_analysis_graphs(runs):
     import matplotlib
     import matplotlib.cm as cmx
     import matplotlib.pyplot as plt
+    import matplotlib.pylab as plb
     from mpl_toolkits.mplot3d import Axes3D
     import os
     import re
@@ -240,7 +241,7 @@ def uncertainty_analysis_graphs(runs):
     plt.subplot(111)
     plt.plot(xs,ys, 's')
     plt.subplot(111)
-    plt.plot(xas, yas, 's')
+    plt.scatter(xas, yas, s = 400, c = 'r')
     plt.grid(True)
     plt.rcParams['figure.figsize'] = (6, 4)
     plt.rcParams.update({'font.size': 12})
@@ -276,4 +277,4 @@ if __name__ == '__main__':
     generation = 'all'
     # configDesign(generation)
     # test_graphs_optimization(generation)
-    uncertainty_analysis_graphs(1)
+    uncertainty_analysis_graphs(19)
