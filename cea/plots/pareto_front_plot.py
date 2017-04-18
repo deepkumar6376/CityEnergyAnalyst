@@ -277,19 +277,11 @@ def uncertainty_analysis_graphs(runs):
     plt.clf()
 
 def uncertainty_analysis_statistics(runs):
-    import cea.globalvar
     import cea.inputlocator
-    import csv
+    import json
     import numpy as np
-    import matplotlib
-    import matplotlib.cm as cmx
-    import matplotlib.pyplot as plt
-    import matplotlib.pylab as plb
-    from mpl_toolkits.mplot3d import Axes3D
     import os
     import re
-    import xlwt
-
     gv = cea.globalvar.GlobalVariables()
     scenario_path = gv.scenario_reference
     locator = cea.inputlocator.InputLocator(scenario_path)
@@ -300,11 +292,9 @@ def uncertainty_analysis_statistics(runs):
     zs = []
 
     for i in xrange(runs):
-        with open("CheckPointTesting_uncertainty_" + str(i), "rb") as csv_file:
-            reader = csv.reader(csv_file)
-            mydict = dict(reader)
-            objective_function = mydict['objective_function_values']
-            objective_function = re.findall(r'\d+\.\d+', objective_function)
+        with open("CheckPointTesting_uncertainty_" + str(i), "rb") as fp:
+            data = json.reader(fp)
+            objective_function = data['population_fitness']
             for j in xrange(20):
                 pareto_intermediate = [objective_function[3 * j], objective_function[3 * j + 1],
                                         objective_function[3 * j + 2]]
@@ -377,4 +367,4 @@ if __name__ == '__main__':
     # configDesign(generation)
     # test_graphs_optimization(generation)
     # uncertainty_analysis_graphs(100)
-    uncertainty_analysis_statistics(100)
+    uncertainty_analysis_statistics(1000)
