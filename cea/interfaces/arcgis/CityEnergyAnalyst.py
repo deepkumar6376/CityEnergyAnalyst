@@ -103,15 +103,20 @@ class OptimizationTool(object):
             datatype="DEFolder",
             parameterType="Required",
             direction="Input")
-        weather_name = arcpy.Parameter(
-            displayName="Weather file (choose from list or enter full path to .epw file)",
-            name="weather_name",
-            datatype="String",
+        population = arcpy.Parameter(
+            displayName="Population Size to run the Optimization",
+            name="population",
+            datatype="GPLong",
             parameterType="Required",
             direction="Input")
-        weather_name.filter.list = get_weather_names()
+        generations = arcpy.Parameter(
+            displayName="Total number of generations for the optimization",
+            name="generations",
+            datatype="GPLong",
+            parameterType="Required",
+            direction="Input")
 
-        return [scenario_path, weather_name]
+        return [scenario_path, population, generations]
 
     def isLicensed(self):
         return True
@@ -142,7 +147,7 @@ class OptimizationTool(object):
         else:
             weather_path = get_weather_path()
 
-        run_cli(scenario_path, 'demand', '--weather', weather_path)
+        run_cli(scenario_path, 'optimization', '--weather', weather_path)
 
 
 
