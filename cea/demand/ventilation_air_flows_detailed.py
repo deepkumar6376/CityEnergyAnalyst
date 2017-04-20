@@ -90,7 +90,7 @@ def get_properties_natural_ventilation(bpr, gv):
     """
 
     n50 = bpr.architecture.n50
-    vol_building = bpr.geometry['footprint'] * bpr.geometry['height_ag']
+    vol_building = bpr.rc_model['Af'] * gv.hf
     qv_delta_p_lea_ref_zone = calc_qv_delta_p_ref(n50, vol_building)
     area_facade_zone,\
     area_roof_zone,\

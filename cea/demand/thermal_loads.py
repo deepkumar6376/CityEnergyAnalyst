@@ -74,6 +74,12 @@ def calc_thermal_loads(building_name, bpr, weather_data, usage_schedules, date, 
     :returns: This function does not return anything
     :rtype: NoneType
 """
+
+    # ++++++++++++++++++++++++++++++++++++++++++++++
+    # CUSTOMIZED n50 - OVERWRITE IF DESIRED
+    bpr.architecture.n50 = 6
+    # ++++++++++++++++++++++++++++++++++++++++++++++
+
     tsd = initialize_timestep_data(bpr, weather_data)
 
     # get schedules
@@ -127,9 +133,9 @@ def calc_thermal_loads(building_name, bpr, weather_data, usage_schedules, date, 
 
             # UNCOMMENT THIS TO OVERWRITE STATIC INFILTRATION WITH DYNAMIC INFILTRATION RATE
             # # TODO: add option for detailed infiltration calculation
-            # dict_props_nat_vent = ventilation_air_flows_detailed.get_properties_natural_ventilation(bpr, gv)
-            # qm_sum_in, qm_sum_out = ventilation_air_flows_detailed.calc_air_flows(tsd['theta_a'][hoy - 1] if not np.isnan(tsd['theta_a'][hoy - 1]) else tsd['T_ext'][hoy - 1], tsd['u_wind'][hoy], tsd['T_ext'][hoy], dict_props_nat_vent)
-            # tsd['m_ve_inf'][hoy] = max(qm_sum_in/3600, 1/3600)  # INFILTRATION IS FORCED NOT TO REACH ZERO IN ORDER TO AVOID THE RC MODEL TO FAIL
+            dict_props_nat_vent = ventilation_air_flows_detailed.get_properties_natural_ventilation(bpr, gv)
+            qm_sum_in, qm_sum_out = ventilation_air_flows_detailed.calc_air_flows(tsd['theta_a'][hoy - 1] if not np.isnan(tsd['theta_a'][hoy - 1]) else tsd['T_ext'][hoy - 1], tsd['u_wind'][hoy], tsd['T_ext'][hoy], dict_props_nat_vent)
+            tsd['m_ve_inf'][hoy] = max(qm_sum_in/3600, 1/3600)  # INFILTRATION IS FORCED NOT TO REACH ZERO IN ORDER TO AVOID THE RC MODEL TO FAIL
 
 
             # ventilation air flows [kg/s]
