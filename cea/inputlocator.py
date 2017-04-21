@@ -382,7 +382,9 @@ class InputLocator(object):
         """scenario/outputs/plots/graphs/Benchmark_scenarios.pdf"""
         return os.path.join(self._ensure_folder(self.scenario_path, 'outputs', 'plots', 'graphs'))
 
-
+    def get_hourly_load_profile_plots_folder(self):
+        """scenario/outputs/plots/graphs/Benchmark_scenarios.pdf"""
+        return os.path.join(self._ensure_folder(self.scenario_path, 'outputs', 'plots', 'hourly_load'))
     # HEATMAPS
     def get_heatmaps_demand_folder(self):
         """scenario/outputs/plots/heatmaps"""
