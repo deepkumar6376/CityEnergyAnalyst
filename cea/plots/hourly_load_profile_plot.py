@@ -7,6 +7,7 @@ import pickle
 import deap
 import cea.globalvar
 import pandas as pd
+import numpy as np
 import json
 import csv
 import cea.inputlocator
@@ -29,15 +30,18 @@ def hourly_load_profile_plot(locator, generation, individual, week):
     # pdf = PdfPages(locator.get_hourly_load_profile_plots_folder())
     total_file = pd.read_csv(locator.get_total_demand()).set_index('Name')
     building_names = list(total_file.index)
-    j = 0
-    for i in building_names:
-        a = i
-        a = pd.read_csv(locator.get_demand_results_folder() + '\\' + i + '.csv')
-        j = j+1
-
-
-
-
+    building_total = pd.DataFrame(np.zeros((8760,4)), columns=['QEf_kWh', 'QHf_kWh', 'QCf_kWh', 'Ef_kWh'])
+    for i in xrange(len(building_names)):
+        a = 'building' + str(i)
+        a = pd.read_csv(locator.get_demand_results_folder() + '\\' + building_names[i] + '.csv')
+        for name in ['QEf_kWh', 'QHf_kWh', 'QCf_kWh', 'Ef_kWh']:
+            building_total[name] = building_total[name] + a[name]
+        # building_total['QEf_kWh'] = building_total['QEf_kWh'] + a['QEf_kWh']
+        # building_total['QHf_kWh'] = building_total['QHf_kWh'] + a['QHf_kWh']
+        # building_total['QCf_kWh'] = building_total['QCf_kWh'] + a['QCf_kWh']
+        # building_total[]
+    print (building_total['QEf_kWh'])
+    building_total['index'] = xrange(8760)
 
     with open(locator.get_optimization_master_results_folder() + "\CheckPoint_" + str(generation), "rb") as fp:
         data = json.load(fp)
@@ -57,6 +61,7 @@ def hourly_load_profile_plot(locator, generation, individual, week):
     df['index'] = xrange(8760)
 
     df1 = df[(df['index'] >= week*7*24) & (df['index'] <= (week+1)*7*24)]
+    df2 = building_total[(building_total['index'] >= week*7*24) & (building_total['index'] <= (week+1)*7*24)]
 
     fig = plt.figure()
 
@@ -69,16 +74,38 @@ def hourly_load_profile_plot(locator, generation, individual, week):
     E_GHP = df1['E_GHP']
     E_PP_and_storage = df1['E_PP_and_storage']
     E_aux_HP_uncontrollable = df1['E_aux_HP_uncontrollable']
+    E_consumed_without_buildingdemand = df1['E_consumed_without_buildingdemand']
     Q_AddBoiler = df1['Q_AddBoiler']
+    demand = df2['Ef_kWh']
+
+
+    # plt.plot(index, ESolarProducedPVandPVT, 'g')
+    plt.plot(index, E_GHP, 'b')
+    plt.plot(index, E_PP_and_storage, 'r')
+    plt.plot(index, E_aux_HP_uncontrollable, 'o')
+    plt.plot(index, E_consumed_without_buildingdemand, 'c')
+    plt.plot(index, demand, 'r')
+    plt.show()
+    # pdf.savefig()
+
+    index = df['index']
+    ESolarProducedPVandPVT = df['ESolarProducedPVandPVT']
+    E_GHP = df['E_GHP']
+    E_PP_and_storage = df['E_PP_and_storage']
+    E_aux_HP_uncontrollable = df['E_aux_HP_uncontrollable']
+    E_consumed_without_buildingdemand = df['E_consumed_without_buildingdemand']
+    Q_AddBoiler = df['Q_AddBoiler']
+    demand = building_total['Ef_kWh']
 
 
     plt.plot(index, ESolarProducedPVandPVT, 'g')
     plt.plot(index, E_GHP, 'b')
     plt.plot(index, E_PP_and_storage, 'r')
     plt.plot(index, E_aux_HP_uncontrollable, 'o')
-    plt.plot(index, Q_AddBoiler, 'c')
+    plt.plot(index, E_consumed_without_buildingdemand, 'c')
+    # plt.plot(index, Q_AddBoiler, 'c')
+    plt.plot(index, demand, 'r')
     plt.show()
-    # pdf.savefig()
 
     return
 
