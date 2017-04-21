@@ -31,7 +31,7 @@ def demand(args):
 def optimization_tool(args):
     """Run the optimization script with the arguments provided."""
     import cea.optimization.optimization_main
-    cea.optimization.run_as_script(scenario_path=args.scenario)
+    cea.optimization.optimization_main.run_as_script(scenario_path=args.scenario)
 
 def data_helper(args):
     """Run the demand helper script with the arguments provided."""
