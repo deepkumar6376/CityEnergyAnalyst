@@ -76,36 +76,36 @@ def hourly_load_profile_plot(locator, generation, individual, week):
     E_aux_HP_uncontrollable = df1['E_aux_HP_uncontrollable']
     E_consumed_without_buildingdemand = df1['E_consumed_without_buildingdemand']
     Q_AddBoiler = df1['Q_AddBoiler']
-    demand = df2['Ef_kWh']
+    demand = df2['Ef_kWh']*1000
 
 
     # plt.plot(index, ESolarProducedPVandPVT, 'g')
     plt.plot(index, E_GHP, 'b')
     plt.plot(index, E_PP_and_storage, 'r')
-    plt.plot(index, E_aux_HP_uncontrollable, 'o')
-    plt.plot(index, E_consumed_without_buildingdemand, 'c')
-    plt.plot(index, demand, 'r')
+    # plt.plot(index, E_aux_HP_uncontrollable, 'o')
+    # plt.plot(index, E_consumed_without_buildingdemand, 'c')
+    plt.plot(index, demand, 'c')
     plt.show()
     # pdf.savefig()
 
-    index = df['index']
-    ESolarProducedPVandPVT = df['ESolarProducedPVandPVT']
-    E_GHP = df['E_GHP']
-    E_PP_and_storage = df['E_PP_and_storage']
-    E_aux_HP_uncontrollable = df['E_aux_HP_uncontrollable']
-    E_consumed_without_buildingdemand = df['E_consumed_without_buildingdemand']
-    Q_AddBoiler = df['Q_AddBoiler']
-    demand = building_total['Ef_kWh']
-
-
-    plt.plot(index, ESolarProducedPVandPVT, 'g')
-    plt.plot(index, E_GHP, 'b')
-    plt.plot(index, E_PP_and_storage, 'r')
-    plt.plot(index, E_aux_HP_uncontrollable, 'o')
-    plt.plot(index, E_consumed_without_buildingdemand, 'c')
-    # plt.plot(index, Q_AddBoiler, 'c')
-    plt.plot(index, demand, 'r')
-    plt.show()
+    # index = df['index']
+    # ESolarProducedPVandPVT = df['ESolarProducedPVandPVT']
+    # E_GHP = df['E_GHP']
+    # E_PP_and_storage = df['E_PP_and_storage']
+    # E_aux_HP_uncontrollable = df['E_aux_HP_uncontrollable']
+    # E_consumed_without_buildingdemand = df['E_consumed_without_buildingdemand']
+    # Q_AddBoiler = df['Q_AddBoiler']
+    # demand = building_total['Ef_kWh']
+    #
+    #
+    # plt.plot(index, ESolarProducedPVandPVT, 'g')
+    # plt.plot(index, E_GHP, 'b')
+    # plt.plot(index, E_PP_and_storage, 'r')
+    # plt.plot(index, E_aux_HP_uncontrollable, 'o')
+    # plt.plot(index, E_consumed_without_buildingdemand, 'c')
+    # # plt.plot(index, Q_AddBoiler, 'c')
+    # plt.plot(index, demand, 'r')
+    # plt.show()
 
     return
 
