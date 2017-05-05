@@ -9,6 +9,7 @@ import cea.globalvar
 import pandas as pd
 import numpy as np
 import json
+import os
 import csv
 import cea.inputlocator
 
@@ -51,13 +52,13 @@ def hourly_load_profile_plot(locator, generation, individual, week):
     pop_individual = []
     for i in xrange(len(pop[individual])):
         if type(pop[individual][i]) is float:
-            pop_individual.append(float(str(pop[individual][i])[0:4]))
+            pop_individual.append((str(pop[individual][i])[0:4]))
         else:
             pop_individual.append(pop[individual][i])
 
-    df = pd.read_csv(locator.get_optimization_slave_results_folder() + '\\'
-                      + ''.join(str(pop_individual[i]) for i in xrange(len(pop_individual)))
-                      + 'PPActivationPattern.csv')
+    df = pd.read_csv((locator.get_optimization_slave_results_folder() + '\\' \
+           + ''.join(str(pop_individual[i]) for i in xrange(len(pop_individual))) \
+           + 'PPActivationPattern.csv'))
     df['index'] = xrange(8760)
 
     df1 = df[(df['index'] >= week*7*24) & (df['index'] <= (week+1)*7*24)]
@@ -116,7 +117,7 @@ if __name__ == '__main__':
     locator = cea.inputlocator.InputLocator(scenario_path)
 
     generation = 5
-    individual = 1
+    individual = 2
     week = 5
 
     individual = individual - 1
