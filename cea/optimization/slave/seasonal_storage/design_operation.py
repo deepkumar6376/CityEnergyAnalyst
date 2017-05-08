@@ -350,7 +350,7 @@ def Storage_Design(CSV_NAME, SOLCOL_TYPE, T_storage_old, Q_in_storage_old, locat
     E_produced_total = np.zeros(HOURS_IN_DAY*DAYS_IN_YEAR)
     E_consumed_total_without_buildingdemand = np.zeros(HOURS_IN_DAY*DAYS_IN_YEAR)
     
-    for hour in range(DAYS_IN_YEAR, HOURS_IN_DAY):
+    for hour in range(DAYS_IN_YEAR * HOURS_IN_DAY):
         E_produced_total[hour] = E_PV_Wh[hour] + E_PVT_Wh[hour]
         E_consumed_total_without_buildingdemand[hour] = E_aux_ch[hour] + E_aux_dech[hour] + E_aux_HP_uncontrollable[hour]
 
