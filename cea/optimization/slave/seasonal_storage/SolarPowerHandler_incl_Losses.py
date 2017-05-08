@@ -1,14 +1,12 @@
 """ Slave Sub Function - Treat solar power!""" 
-
-
+from __future__ import division
+import numpy as np
 """
 
 In this file, all sub-functions are stored that are used for storage design and operation. 
 They are called by either the operation or optimization of storage.
 """
 
-
-import numpy as np
  
 
 def StorageGateway(Q_solar_available, Q_network_demand, P_HP_max, gv):
@@ -316,7 +314,7 @@ def Storage_Operator(Q_solar_available, Q_network_demand, T_storage_old, T_DH_su
             if Q_missing < 0: #catch numerical errors (leading to very low (absolute) negative numbers) 
                 Q_missing = 0
             mdot_DH_missing = mdot_DH * (Q_missing)/ Q_network_demand
-            
+
             #print "mdot_DH_missing", mdot_DH_missing
                  
     return Q_in_storage_new, T_storage_new, Q_from_storage_req, Q_to_storage, E_aux_ch, E_aux_dech, \
