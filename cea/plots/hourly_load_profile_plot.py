@@ -33,14 +33,11 @@ def hourly_load_profile_plot(locator, generation, individual, week, yearly):
     building_names = list(total_file.index)
     building_total = pd.DataFrame(np.zeros((8760,4)), columns=['QEf_kWh', 'QHf_kWh', 'QCf_kWh', 'Ef_kWh'])
     for i in xrange(len(building_names)):
-        a = 'building' + str(i)
-        a = pd.read_csv(locator.get_demand_results_folder() + '\\' + building_names[i] + '.csv')
+        building_demand_results = 'building' + str(i)
+        building_demand_results = pd.read_csv(locator.get_demand_results_folder() + '\\' + building_names[i] + '.csv')
         for name in ['QEf_kWh', 'QHf_kWh', 'QCf_kWh', 'Ef_kWh']:
-            building_total[name] = building_total[name] + a[name]
-        # building_total['QEf_kWh'] = building_total['QEf_kWh'] + a['QEf_kWh']
-        # building_total['QHf_kWh'] = building_total['QHf_kWh'] + a['QHf_kWh']
-        # building_total['QCf_kWh'] = building_total['QCf_kWh'] + a['QCf_kWh']
-        # building_total[]
+            building_total[name] = building_total[name] + building_demand_results[name]
+
     print (building_total['QEf_kWh'])
     building_total['index'] = xrange(8760)
 
@@ -69,7 +66,7 @@ def hourly_load_profile_plot(locator, generation, individual, week, yearly):
         ESolarProducedPVandPVT = df['ESolarProducedPVandPVT']
         E_produced_total = df['E_produced_total']
 
-        plt.plot(index, ESolarProducedPVandPVT, 'k')
+        # plt.plot(index, ESolarProducedPVandPVT, 'k')
         plt.plot(index, E_produced_total, 'c')
         # plt.show()
 
@@ -84,8 +81,34 @@ def hourly_load_profile_plot(locator, generation, individual, week, yearly):
         # plt.plot(index, E_GHP, 'b')
         # plt.plot(index, E_PP_and_storage, 'r')
         # plt.plot(index, E_aux_HP_uncontrollable, 'g')
-        # plt.plot(index, E_consumed_without_buildingdemand, 'm')
-        plt.plot(index, E_building_demand, 'm')
+        plt.plot(index, E_consumed_without_buildingdemand, 'm')
+        # plt.plot(index, E_building_demand, 'm')
+        plt.show()
+
+        total_yearly_electricity_demand_of_all_buildings = np.sum(building_total['Ef_kWh'])*1000
+        total_yearly_demand_of_all_buildings = np.sum(building_total['QEf_kWh'])*1000
+        total_electricity_produced = np.sum(E_produced_total)
+        total_GHP = np.sum(E_GHP)
+        total_E_PP_and_storage = np.sum(E_PP_and_storage)
+        total_E_aux_HP_uncontrollable = np.sum(E_aux_HP_uncontrollable)
+        total_E_consumed_without_buildingdemand = np.sum(E_consumed_without_buildingdemand)
+
+        pie_total = [total_electricity_produced, total_yearly_electricity_demand_of_all_buildings,
+                     total_yearly_demand_of_all_buildings]
+        pie_labels = ['produced', 'consumed', 'Total requirement']
+
+        fig, (ax1, ax2) = plt.subplots(1,2)
+
+        ax1.pie(pie_total, labels = pie_labels)
+        ax1.axis('equal')
+
+        pie_total = [total_GHP, total_E_PP_and_storage, total_E_aux_HP_uncontrollable,
+                     total_E_consumed_without_buildingdemand]
+        pie_labels = ['GHP', 'PP and storage', 'Aux HP uncontrollable', 'E without building demand']
+
+        ax2.pie(pie_total, labels = pie_labels, startangle = 90)
+        ax2.axis('equal')
+
         plt.show()
 
 
@@ -121,6 +144,7 @@ def hourly_load_profile_plot(locator, generation, individual, week, yearly):
     plt.plot(index, demand, 'c')
     plt.show()
     # pdf.savefig()
+
 
     return
 
