@@ -76,7 +76,8 @@ def properties(locator, prop_architecture_flag, prop_hvac_flag, prop_comfort_fla
 
         # write to shapefile
         prop_architecture_df_merged = names_df.merge(prop_architecture_df, on="Name")
-        fields = ['Name', 'Hs', 'win_wall', 'type_cons', 'type_leak',  'type_roof', 'type_wall', 'type_win', 'type_shade']
+        fields = ['Name', 'Hs', 'wwr_north', 'wwr_west','wwr_east', 'wwr_south',
+                  'type_cons', 'type_leak',  'type_roof', 'type_wall', 'type_win', 'type_shade']
         df2dbf(prop_architecture_df_merged[fields], locator.get_building_architecture())
 
 
@@ -160,8 +161,8 @@ def calc_category(archetype_DB, age):
                                          (archetype_DB['standard'] == 'C')].Code.values[0])
     return category
 
-def run_as_script(scenario_path=None, prop_thermal_flag=True, prop_architecture_flag=True, prop_hvac_flag=True,
-                  prop_comfort_flag=True, prop_internal_loads_flag=True):
+def run_as_script(scenario_path=None, prop_thermal_flag=True, prop_architecture_flag=True, prop_hvac_flag=False,
+                  prop_comfort_flag=False, prop_internal_loads_flag=False):
     """
     Run the properties script with input from the reference case and compare the results. This ensures that changes
     made to this script (e.g. refactorings) do not stop the script from working and also that the results stay the same.
