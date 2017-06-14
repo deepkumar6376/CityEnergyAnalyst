@@ -52,18 +52,22 @@ def properties(locator, prop_architecture_flag, prop_hvac_flag, prop_comfort_fla
     """
 
     # get occupancy and age files
-    building_occupancy_df = dbf2df(locator.get_building_occupancy())
-    list_uses = list(building_occupancy_df.drop(['PFloor', 'Name'], axis=1).columns) #parking excluded in U-Values
+    building_functions_df = dbf2df(locator.get_building_occupancy())
+    #list_uses = list(building_functions_df.drop(['PFloor', 'Name'], axis=1).columns) #parking excluded in U-Values
+    # --> list_uses not needed anymore to calculate main use
     building_age_df = dbf2df(locator.get_building_age())
 
     # prepare shapefile to store results (a shapefile with only names of buildings
     names_df = building_age_df[['Name']]
 
     # define main use:
-    building_occupancy_df['mainuse'] = calc_mainuse(building_occupancy_df, list_uses)
+    #building_functions_df['mainuse'] = calc_mainuse(building_functions_df, list_uses)
+    # --> main use caclculation not used any more
+    building_functions_df = calc_main_use_for_mixed_use(building_functions_df)
 
     # dataframe with jonned data for categories
-    categories_df = building_occupancy_df.merge(building_age_df, on='Name')
+    # TODO: rename categories, this name is confusing
+    categories_df = building_functions_df.merge(building_age_df, on='Name')
 
     # get properties about the construction and architecture
     if prop_architecture_flag:
@@ -134,6 +138,34 @@ def calc_mainuse(uses_df, uses):
     return mainuse
 
 
+def calc_main_use_for_mixed_use(building_functions_df):
+    """
+    Calculates main use of buildings by counting occurrences of functions per floor and chooses most frequent one
+     as main use
+      
+    Author: Gabriel Happle, June 2017
+    
+    :param building_functions_df: data frame with building functions per floor
+    :type building_functions_df: DataFrame
+    :return: data frame with column 'mainuse' added
+    :rtype: DataFrame
+    """
+
+    # initialize pandas series
+    main_use = pd.Series(data=building_functions_df.iloc[:, 0])
+
+    # iterates over data frame rows to use value_counts() function and choosing index of first element
+    for index, row in building_functions_df.iterrows():
+        main_use.iloc[index] = row.drop('Name').value_counts().index[0]
+
+    # assigns main use series to building functions data frame as new column
+    building_functions_df = building_functions_df.assign(mainuse = main_use.values)
+
+    return building_functions_df
+
+
+
+
 def get_database(path_database, sheet):
     database = pd.read_excel(path_database, sheet)
     return database
@@ -147,6 +179,8 @@ def calc_comparison(array_min, array_max):
 
 
 def calc_category(archetype_DB, age):
+    # TODO: add documentation
+
     category = []
     for row in age.index:
         if age.loc[row, 'envelope'] > 0:
