@@ -17,13 +17,21 @@ renovation and a type of occupancy in the building.
 area. If you decide to use the existing please remember to acknowledge
 the authors:*
 
--  Fonseca, J. A., & Schlueter, A. (2015). Integrated model for
+-  Fonseca, J. A. and Schlueter, A. (2015). Integrated model for
    characterization of spatiotemporal building energy consumption
    patterns in neighborhoods and city districts. Applied Energy, 142,
    247–265.
--  *Thoma, E., J. A. Fonseca, and A. Schlueter. "Estimation of
+-  Thoma, E., J. A. Fonseca, and A. Schlueter. "Estimation of
    base-values for Grey Energy, Primary Energy, Global Warming Potential
    (GWP 100A) and Umweltbelastungspunkte (UBP 2006) for Swiss
    constructions from before 1920 until today." Contemporary Urban
-   Issues. 2014. 17.*
-   \`
+   Issues. 2014. 17.
+
+The current version of the CEA uses the following archetype databases:
+
+.. toctree::
+    :maxdepth: 1
+
+    building-properties
+    building-schedules
+
