@@ -185,7 +185,8 @@ The encoding of the ``<CONFIGURATION>`` represents the following:
 +---------------+--------+-----------------------------------------+
 |             2 |      0 | Base boiler OFF                         |
 |               +--------+-----------------------------------------+
-|               |      1 | Base boiler ON                          |
+|               |      1 | Base boiler ON. If ON, it has two       |
+|               |        | choices of being NG (1) or BG (2)       |
 +---------------+--------+-----------------------------------------+
 |             3 | 0 to 1 | Capacity share (of overall requirement) |
 |               |        | of index '2', truncated to two          |
@@ -193,7 +194,8 @@ The encoding of the ``<CONFIGURATION>`` represents the following:
 +---------------+--------+-----------------------------------------+
 |             4 |      0 | Peak boiler OFF                         |
 |               +--------+-----------------------------------------+
-|               |      1 | Peak boiler ON                          |
+|               |      1 | Peak boiler ON. If ON, it has two       |
+|               |        | choices of being NG (1) or BG (2)       |
 +---------------+--------+-----------------------------------------+
 |             5 | 0 to 1 | Capacity share (of overall requirement) |
 |               |        | of index '4', truncated to two          |
