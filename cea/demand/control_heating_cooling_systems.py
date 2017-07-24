@@ -76,7 +76,7 @@ def cooling_system_is_ac(bpr):
     :rtype: bool
     """
 
-    if bpr.hvac['type_cs'] in {'T2', 'T3'}:  # mini-split ac and central ac
+    if bpr.hvac['type_cs'] in {'T2', 'T3'}:  # mini-split ac and central ac FIXME: different strategies for central and mini-split
         return True
     elif bpr.hvac['type_cs'] in {'T0', 'T1'}:
         return False
