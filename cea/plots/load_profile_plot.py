@@ -118,16 +118,16 @@ def load_profile_plot(locator, generation, individual, week, yearly):
 
     #  yearly
 
-    network_demand = df_SO['Q_DH_networkload']
-    Q_from_storage = df_SO['Q_DH_networkload'] - df_SO['Q_missing']
-    Q_from_base_boiler = df_PPA['Q_BoilerBase']
-    Q_from_peak_boiler = df_PPA['Q_BoilerPeak']
-    Q_from_additional_boiler = df_PPA['Q_AddBoiler']
-    Q_from_CC = df_PPA['Q_CC']
-    Q_from_furnace = df_PPA['Q_Furnace']
-    Q_from_GHP = df_PPA['Q_GHP']
-    Q_from_lake = df_PPA['Q_HPLake']
-    Q_from_sewage = df_PPA['Q_HPSew']
+    network_demand = df_SO['Q_DH_networkload_W']
+    Q_from_storage = df_SO['Q_DH_networkload_W'] - df_SO['Q_missing_W']
+    Q_from_base_boiler = df_PPA['Q_BoilerBase_W']
+    Q_from_peak_boiler = df_PPA['Q_BoilerPeak_W']
+    Q_from_additional_boiler = df_PPA['Q_AddBoiler_W']
+    Q_from_CC = df_PPA['Q_CC_W']
+    Q_from_furnace = df_PPA['Q_Furnace_W']
+    Q_from_GHP = df_PPA['Q_GHP_W']
+    Q_from_lake = df_PPA['Q_HPLake_W']
+    Q_from_sewage = df_PPA['Q_HPSew_W']
 
     # plt.plot(index, network_demand, 'r')
     # plt.plot(index, Q_from_storage, 'b')
@@ -150,16 +150,16 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     df1_SO = df_SO[(df_SO['index'] >= week * 7 * 24) & (df_SO['index'] <= (week + 1) * 7 * 24)]
     index = df1_PPA['index']
 
-    network_demand = df1_SO['Q_DH_networkload']
-    Q_from_storage = df1_SO['Q_DH_networkload'] - df1_SO['Q_missing']
-    Q_from_base_boiler = df1_PPA['Q_BoilerBase']
-    Q_from_peak_boiler = df1_PPA['Q_BoilerPeak']
-    Q_from_additional_boiler = df1_PPA['Q_AddBoiler']
-    Q_from_CC = df1_PPA['Q_CC']
-    Q_from_furnace = df1_PPA['Q_Furnace']
-    Q_from_GHP = df1_PPA['Q_GHP']
-    Q_from_lake = df1_PPA['Q_HPLake']
-    Q_from_sewage = df1_PPA['Q_HPSew']
+    network_demand = df1_SO['Q_DH_networkload_W']
+    Q_from_storage = df1_SO['Q_DH_networkload_W'] - df1_SO['Q_missing_W']
+    Q_from_base_boiler = df1_PPA['Q_BoilerBase_W']
+    Q_from_peak_boiler = df1_PPA['Q_BoilerPeak_W']
+    Q_from_additional_boiler = df1_PPA['Q_AddBoiler_W']
+    Q_from_CC = df1_PPA['Q_CC_W']
+    Q_from_furnace = df1_PPA['Q_Furnace_W']
+    Q_from_GHP = df1_PPA['Q_GHP_W']
+    Q_from_lake = df1_PPA['Q_HPLake_W']
+    Q_from_sewage = df1_PPA['Q_HPSew_W']
 
     # plt.plot(index, network_demand, 'r')
     # plt.plot(index, Q_from_storage, 'b')
@@ -178,9 +178,29 @@ def load_profile_plot(locator, generation, individual, week, yearly):
 
 
     fig, ax = plt.subplots()
-    # plt.plot(index, network_demand, 'r')
-    ax.stackplot (index, Q_from_storage, Q_from_base_boiler, Q_from_peak_boiler, Q_from_additional_boiler,
-                  Q_from_CC, Q_from_furnace, Q_from_GHP, Q_from_lake, Q_from_sewage)
+
+
+    plt.plot([], [], color='b', label='Q_from_storage', linewidth=5)
+    # plt.plot([], [], color='g', label='Q_from_base_boiler', linewidth=5)
+    # plt.plot([], [], color='r', label='Q_from_peak_boiler', linewidth=5)
+    plt.plot([], [], color='c', label='Q_from_additional_boiler', linewidth=5)
+    plt.plot([], [], color='m', label='Q_from_CC', linewidth=5)
+    plt.plot([], [], color='y', label='Q_from_furnace', linewidth=5)
+    plt.plot([], [], color='k', label='Q_from_GHP', linewidth=5)
+    plt.plot([], [], color='r', label='Q_from_lake', linewidth=5)
+    plt.plot([], [], color='g', label='Q_from_sewage', linewidth=5)
+
+    plt.stackplot (index, Q_from_storage, Q_from_additional_boiler,
+                  Q_from_CC, Q_from_furnace, Q_from_GHP, Q_from_lake, Q_from_sewage, colors = ['b', 'c', 'm', 'y', 'k', 'r', 'g'])
+
+    plt.xlabel('hour number')
+    plt.ylabel('Thermal Energy in W')
+    # plt.title('Interesting Graph\nCheck it out')
+    plt.legend()
+
+    # plt.legend([Q_from_storage, Q_from_base_boiler, Q_from_peak_boiler, Q_from_additional_boiler,
+    #               Q_from_CC, Q_from_furnace, Q_from_GHP, Q_from_lake, Q_from_sewage], ['Q_from_storage', 'Q_from_base_boiler', 'Q_from_peak_boiler', 'Q_from_additional_boiler',
+    #               'Q_from_CC', 'Q_from_furnace', 'Q_from_GHP', 'Q_from_lake', 'Q_from_sewage'])
 
     plt.show()
     print (''.join(str(pop_individual[i]) for i in xrange(len(pop_individual))))
@@ -194,10 +214,10 @@ if __name__ == '__main__':
     scenario_path = gv.scenario_reference
     locator = cea.inputlocator.InputLocator(scenario_path)
 
-    generation = 30
-    individual = 10
+    generation = 5
+    individual = 5
     yearly = True
-    week = 40
+    week = 2
 
     individual = individual - 1
     load_profile_plot(locator, generation, individual, week, yearly)
