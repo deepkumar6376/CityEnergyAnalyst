@@ -63,58 +63,6 @@ def load_profile_plot(locator, generation, individual, week, yearly):
            + '_StorageOperationData.csv'))
     df_SO['index'] = xrange(8760)
     index = df_PPA['index']
-    # if yearly is True:
-    #     index = df_PPA['index']
-    #
-    #     # Electricity Produced
-    #
-    #     ESolarProducedPVandPVT = df_PPA['ESolarProducedPVandPVT']
-    #     E_produced_total = df_PPA['E_produced_total']
-    #
-    #     # plt.plot(index, ESolarProducedPVandPVT, 'k')
-    #     plt.plot(index, E_produced_total, 'c')
-    #     # plt.show()
-    #
-    #     # Electricity Consumed
-    #
-    #     E_GHP = df_PPA['E_GHP']
-    #     E_PP_and_storage = df_PPA['E_PP_and_storage']
-    #     E_aux_HP_uncontrollable = df_PPA['E_aux_HP_uncontrollable']
-    #     E_consumed_without_buildingdemand = df_PPA['E_consumed_without_buildingdemand']
-    #     E_building_demand = building_total['Ef_kWh']*1000
-    #
-    #     # plt.plot(index, E_GHP, 'b')
-    #     # plt.plot(index, E_PP_and_storage, 'r')
-    #     # plt.plot(index, E_aux_HP_uncontrollable, 'g')
-    #     plt.plot(index, E_consumed_without_buildingdemand, 'm')
-    #     # plt.plot(index, E_building_demand, 'm')
-    #     plt.show()
-    #
-    #     total_yearly_electricity_demand_of_all_buildings = np.sum(building_total['Ef_kWh'])*1000
-    #     total_yearly_demand_of_all_buildings = np.sum(building_total['QEf_kWh'])*1000
-    #     total_electricity_produced = np.sum(E_produced_total)
-    #     total_GHP = np.sum(E_GHP)
-    #     total_E_PP_and_storage = np.sum(E_PP_and_storage)
-    #     total_E_aux_HP_uncontrollable = np.sum(E_aux_HP_uncontrollable)
-    #     total_E_consumed_without_buildingdemand = np.sum(E_consumed_without_buildingdemand)
-    #
-    #     pie_total = [total_electricity_produced, total_yearly_electricity_demand_of_all_buildings,
-    #                  total_yearly_demand_of_all_buildings]
-    #     pie_labels = ['produced', 'consumed', 'Total requirement']
-    #
-    #     fig, (ax1, ax2) = plt.subplots(1,2)
-    #
-    #     ax1.pie(pie_total, labels = pie_labels)
-    #     ax1.axis('equal')
-    #
-    #     pie_total = [total_GHP, total_E_PP_and_storage, total_E_aux_HP_uncontrollable,
-    #                  total_E_consumed_without_buildingdemand]
-    #     pie_labels = ['GHP', 'PP and storage', 'Aux HP uncontrollable', 'E without building demand']
-    #
-    #     ax2.pie(pie_total, labels = pie_labels, startangle = 90)
-    #     ax2.axis('equal')
-    #
-    #     plt.show()
 
     #  yearly
 
@@ -128,6 +76,7 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     Q_from_GHP = df_PPA['Q_GHP_W']
     Q_from_lake = df_PPA['Q_HPLake_W']
     Q_from_sewage = df_PPA['Q_HPSew_W']
+    Q_from_PV = df_SO['Q_SCandPVT_gen_Wh']
 
     # plt.plot(index, network_demand, 'r')
     # plt.plot(index, Q_from_storage, 'b')
@@ -136,12 +85,27 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     # plt.plot(index, Q_from_lake, 'y')
     # plt.plot(index, Q_from_sewage, 'k')
 
-    fig, ax = plt.subplots()
-    # plt.plot(index, network_demand, 'r')
-    ax.stackplot (index, Q_from_storage, Q_from_base_boiler, Q_from_peak_boiler, Q_from_additional_boiler,
-                  Q_from_CC, Q_from_furnace, Q_from_GHP, Q_from_lake, Q_from_sewage)
+    plt.plot([], [], color='b', label='Q_from_storage', linewidth=5)
+    plt.plot([], [], color='tab:orange', label='Q_from_PV', linewidth=5)
+    plt.plot([], [], color='c', label='Q_from_boiler', linewidth=5)
+    plt.plot([], [], color='m', label='Q_from_CC', linewidth=5)
+    plt.plot([], [], color='y', label='Q_from_furnace', linewidth=5)
+    plt.plot([], [], color='k', label='Q_from_GHP', linewidth=5)
+    plt.plot([], [], color='r', label='Q_from_lake', linewidth=5)
+    plt.plot([], [], color='g', label='Q_from_sewage', linewidth=5)
 
+
+    plt.stackplot(index, Q_from_storage, Q_from_PV, Q_from_additional_boiler + Q_from_base_boiler + Q_from_peak_boiler,
+                  Q_from_CC, Q_from_furnace, Q_from_GHP, Q_from_lake, Q_from_sewage,
+                  colors=['b', 'tab:orange', 'c', 'm', 'y', 'k', 'r', 'g'])
+
+    plt.xlabel('hour number')
+    plt.ylabel('Thermal Energy in W')
+    plt.legend()
     plt.show()
+
+    #  electricity
+
 
 
     #  weekly
@@ -161,47 +125,25 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     Q_from_lake = df1_PPA['Q_HPLake_W']
     Q_from_sewage = df1_PPA['Q_HPSew_W']
 
-    # plt.plot(index, network_demand, 'r')
-    # plt.plot(index, Q_from_storage, 'b')
-    # plt.plot(index, Q_from_base_boiler + Q_from_peak_boiler + Q_from_additional_boiler, 'm')
-    # plt.plot(index, Q_from_GHP, 'g')
-    # plt.plot(index, Q_from_lake, 'y')
-    # plt.plot(index, Q_from_sewage, 'k')
-
-    # plt.fill(index, network_demand, 'r')
-    # plt.fill(index, Q_from_storage, 'b')
-    # plt.fill(index, Q_from_base_boiler + Q_from_peak_boiler + Q_from_additional_boiler, 'm')
-    # plt.fill(index, Q_from_GHP, 'g')
-    # plt.fill(index, Q_from_lake, 'y')
-    # plt.fill(index, Q_from_sewage, 'k')
-
-
-
     fig, ax = plt.subplots()
 
 
     plt.plot([], [], color='b', label='Q_from_storage', linewidth=5)
     # plt.plot([], [], color='g', label='Q_from_base_boiler', linewidth=5)
     # plt.plot([], [], color='r', label='Q_from_peak_boiler', linewidth=5)
-    plt.plot([], [], color='c', label='Q_from_additional_boiler', linewidth=5)
+    plt.plot([], [], color='c', label='Q_from_boiler', linewidth=5)
     plt.plot([], [], color='m', label='Q_from_CC', linewidth=5)
     plt.plot([], [], color='y', label='Q_from_furnace', linewidth=5)
     plt.plot([], [], color='k', label='Q_from_GHP', linewidth=5)
     plt.plot([], [], color='r', label='Q_from_lake', linewidth=5)
     plt.plot([], [], color='g', label='Q_from_sewage', linewidth=5)
 
-    plt.stackplot (index, Q_from_storage, Q_from_additional_boiler,
+    plt.stackplot (index, Q_from_storage, Q_from_additional_boiler + Q_from_base_boiler + Q_from_peak_boiler,
                   Q_from_CC, Q_from_furnace, Q_from_GHP, Q_from_lake, Q_from_sewage, colors = ['b', 'c', 'm', 'y', 'k', 'r', 'g'])
 
     plt.xlabel('hour number')
     plt.ylabel('Thermal Energy in W')
-    # plt.title('Interesting Graph\nCheck it out')
     plt.legend()
-
-    # plt.legend([Q_from_storage, Q_from_base_boiler, Q_from_peak_boiler, Q_from_additional_boiler,
-    #               Q_from_CC, Q_from_furnace, Q_from_GHP, Q_from_lake, Q_from_sewage], ['Q_from_storage', 'Q_from_base_boiler', 'Q_from_peak_boiler', 'Q_from_additional_boiler',
-    #               'Q_from_CC', 'Q_from_furnace', 'Q_from_GHP', 'Q_from_lake', 'Q_from_sewage'])
-
     plt.show()
     print (''.join(str(pop_individual[i]) for i in xrange(len(pop_individual))))
 
