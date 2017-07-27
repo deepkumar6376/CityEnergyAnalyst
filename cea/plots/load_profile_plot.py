@@ -103,6 +103,7 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     plt.ylabel('Thermal Energy in W')
     plt.legend()
     plt.show()
+    # testing
 
     #  electricity
 
