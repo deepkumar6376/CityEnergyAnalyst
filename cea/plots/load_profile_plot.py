@@ -87,14 +87,14 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     # plt.plot(index, Q_from_lake, 'y')
     # plt.plot(index, Q_from_sewage, 'k')
     plt.subplot(2, 1, 1)
-    plt.plot([], [], color='b', label='Q_from_storage', linewidth=5)
-    plt.plot([], [], color='tab:orange', label='Q_from_PV', linewidth=5)
-    plt.plot([], [], color='c', label='Q_from_boiler', linewidth=5)
-    plt.plot([], [], color='m', label='Q_from_CC', linewidth=5)
-    plt.plot([], [], color='y', label='Q_from_furnace', linewidth=5)
-    plt.plot([], [], color='k', label='Q_from_GHP', linewidth=5)
-    plt.plot([], [], color='r', label='Q_from_lake', linewidth=5)
-    plt.plot([], [], color='g', label='Q_from_sewage', linewidth=5)
+    plt.plot([], [], color='b', label='Storage', linewidth=5)
+    plt.plot([], [], color='tab:orange', label='Solar', linewidth=5)
+    plt.plot([], [], color='c', label='Boiler', linewidth=5)
+    plt.plot([], [], color='m', label='CC', linewidth=5)
+    plt.plot([], [], color='y', label='Furnace', linewidth=5)
+    plt.plot([], [], color='k', label='GHP', linewidth=5)
+    plt.plot([], [], color='r', label='Lake', linewidth=5)
+    plt.plot([], [], color='g', label='Sewage', linewidth=5)
 
 
     plt.stackplot(index, Q_from_storage, Q_from_PV, Q_from_additional_boiler + Q_from_base_boiler + Q_from_peak_boiler,
@@ -104,16 +104,22 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     plt.xlabel('hour number')
     plt.ylabel('Thermal Energy in W')
     plt.legend()
-    plt.show()
     # testing
 
     #  electricity
-
-
+    E_from_CC = df_PPA['E_CC_gen_W']
+    E_from_solar = df_PPA['E_solar_gen_W']
 
     plt.subplot(2, 1, 2)
+    plt.plot([], [], color='m', label='CC', linewidth=5)
+    plt.plot([], [], color='tab:orange', label='Solar', linewidth=5)
+    plt.stackplot(index, E_from_CC, E_from_solar,
+                  colors=['m', 'tab:orange'])
 
-
+    plt.xlabel('hour number')
+    plt.ylabel('Electricity Produced in W')
+    plt.legend()
+    plt.show()
     #  weekly
 
     df1_PPA = df_PPA[(df_PPA['index'] >= week * 7 * 24) & (df_PPA['index'] <= (week + 1) * 7 * 24)]
@@ -130,25 +136,42 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     Q_from_GHP = df1_PPA['Q_GHP_W']
     Q_from_lake = df1_PPA['Q_HPLake_W']
     Q_from_sewage = df1_PPA['Q_HPSew_W']
+    Q_from_PV = df1_SO['Q_SCandPVT_gen_Wh']
 
     fig, ax = plt.subplots()
+    plt.subplot(2, 1, 1)
+    plt.plot([], [], color='b', label='Storage', linewidth=5)
+    plt.plot([], [], color='tab:orange', label='Solar', linewidth=5)
+    plt.plot([], [], color='c', label='Boiler', linewidth=5)
+    plt.plot([], [], color='m', label='CC', linewidth=5)
+    plt.plot([], [], color='y', label='Furnace', linewidth=5)
+    plt.plot([], [], color='k', label='GHP', linewidth=5)
+    plt.plot([], [], color='r', label='Lake', linewidth=5)
+    plt.plot([], [], color='g', label='Sewage', linewidth=5)
 
 
-    plt.plot([], [], color='b', label='Q_from_storage', linewidth=5)
-    plt.plot([], [], color='c', label='Q_from_boiler', linewidth=5)
-    plt.plot([], [], color='m', label='Q_from_CC', linewidth=5)
-    plt.plot([], [], color='y', label='Q_from_furnace', linewidth=5)
-    plt.plot([], [], color='k', label='Q_from_GHP', linewidth=5)
-    plt.plot([], [], color='r', label='Q_from_lake', linewidth=5)
-    plt.plot([], [], color='g', label='Q_from_sewage', linewidth=5)
-
-    plt.stackplot (index, Q_from_storage, Q_from_additional_boiler + Q_from_base_boiler + Q_from_peak_boiler,
-                  Q_from_CC, Q_from_furnace, Q_from_GHP, Q_from_lake, Q_from_sewage, colors = ['b', 'c', 'm', 'y', 'k', 'r', 'g'])
+    plt.stackplot(index, Q_from_storage, Q_from_PV, Q_from_additional_boiler + Q_from_base_boiler + Q_from_peak_boiler,
+                  Q_from_CC, Q_from_furnace, Q_from_GHP, Q_from_lake, Q_from_sewage,
+                  colors=['b', 'tab:orange', 'c', 'm', 'y', 'k', 'r', 'g'])
 
     plt.xlabel('hour number')
     plt.ylabel('Thermal Energy in W')
     plt.legend()
+
+    E_from_CC = df1_PPA['E_CC_gen_W']
+    E_from_solar = df1_PPA['E_solar_gen_W']
+
+    plt.subplot(2, 1, 2)
+    plt.plot([], [], color='m', label='CC', linewidth=5)
+    plt.plot([], [], color='tab:orange', label='Solar', linewidth=5)
+    plt.stackplot(index, E_from_CC, E_from_solar,
+                  colors=['m', 'tab:orange'])
+
+    plt.xlabel('hour number')
+    plt.ylabel('Electricity Produced in W')
+    plt.legend()
     plt.show()
+
     print (''.join(str(pop_individual[i]) for i in xrange(len(pop_individual))))
 
 
@@ -160,10 +183,10 @@ if __name__ == '__main__':
     scenario_path = gv.scenario_reference
     locator = cea.inputlocator.InputLocator(scenario_path)
 
-    generation = 5
+    generation = 1
     individual = 5
     yearly = True
-    week = 2
+    week = 10
 
     individual = individual - 1
     load_profile_plot(locator, generation, individual, week, yearly)
