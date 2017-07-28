@@ -78,6 +78,8 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     Q_from_sewage = df_PPA['Q_HPSew_W']
     Q_from_PV = df_SO['Q_SCandPVT_gen_Wh']
 
+    
+
     # plt.plot(index, network_demand, 'r')
     # plt.plot(index, Q_from_storage, 'b')
     # plt.plot(index, Q_from_base_boiler + Q_from_peak_boiler + Q_from_additional_boiler, 'm')
@@ -130,8 +132,6 @@ def load_profile_plot(locator, generation, individual, week, yearly):
 
 
     plt.plot([], [], color='b', label='Q_from_storage', linewidth=5)
-    # plt.plot([], [], color='g', label='Q_from_base_boiler', linewidth=5)
-    # plt.plot([], [], color='r', label='Q_from_peak_boiler', linewidth=5)
     plt.plot([], [], color='c', label='Q_from_boiler', linewidth=5)
     plt.plot([], [], color='m', label='Q_from_CC', linewidth=5)
     plt.plot([], [], color='y', label='Q_from_furnace', linewidth=5)
