@@ -86,7 +86,7 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     # plt.plot(index, Q_from_GHP, 'g')
     # plt.plot(index, Q_from_lake, 'y')
     # plt.plot(index, Q_from_sewage, 'k')
-
+    plt.subplot(2, 1, 1)
     plt.plot([], [], color='b', label='Q_from_storage', linewidth=5)
     plt.plot([], [], color='tab:orange', label='Q_from_PV', linewidth=5)
     plt.plot([], [], color='c', label='Q_from_boiler', linewidth=5)
@@ -109,6 +109,9 @@ def load_profile_plot(locator, generation, individual, week, yearly):
 
     #  electricity
 
+
+
+    plt.subplot(2, 1, 2)
 
 
     #  weekly
