@@ -78,14 +78,7 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     Q_from_sewage = df_PPA['Q_HPSew_W']
     Q_from_PV = df_SO['Q_SCandPVT_gen_Wh']
 
-    
 
-    # plt.plot(index, network_demand, 'r')
-    # plt.plot(index, Q_from_storage, 'b')
-    # plt.plot(index, Q_from_base_boiler + Q_from_peak_boiler + Q_from_additional_boiler, 'm')
-    # plt.plot(index, Q_from_GHP, 'g')
-    # plt.plot(index, Q_from_lake, 'y')
-    # plt.plot(index, Q_from_sewage, 'k')
     plt.subplot(2, 1, 1)
     plt.plot([], [], color='b', label='Storage', linewidth=5)
     plt.plot([], [], color='tab:orange', label='Solar', linewidth=5)
@@ -97,14 +90,13 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     plt.plot([], [], color='g', label='Sewage', linewidth=5)
 
 
-    plt.stackplot(index, Q_from_storage, Q_from_PV, Q_from_additional_boiler + Q_from_base_boiler + Q_from_peak_boiler,
-                  Q_from_CC, Q_from_furnace, Q_from_GHP, Q_from_lake, Q_from_sewage,
+    plt.stackplot(index / 24, Q_from_storage / 1E6, Q_from_PV / 1E6, (Q_from_additional_boiler + Q_from_base_boiler + Q_from_peak_boiler) / 1E6,
+                  Q_from_CC / 1E6, Q_from_furnace / 1E6, Q_from_GHP / 1E6, Q_from_lake / 1E6, Q_from_sewage / 1E6,
                   colors=['b', 'tab:orange', 'c', 'm', 'y', 'k', 'r', 'g'])
 
-    plt.xlabel('hour number')
-    plt.ylabel('Thermal Energy in W')
+    plt.xlabel('Day in year', fontsize = 14, fontweight = 'bold')
+    plt.ylabel('Thermal Energy in MW', fontsize = 14, fontweight = 'bold')
     plt.legend()
-    # testing
 
     #  electricity
     E_from_CC = df_PPA['E_CC_gen_W']
@@ -113,13 +105,16 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     plt.subplot(2, 1, 2)
     plt.plot([], [], color='m', label='CC', linewidth=5)
     plt.plot([], [], color='tab:orange', label='Solar', linewidth=5)
-    plt.stackplot(index, E_from_CC, E_from_solar,
+    plt.stackplot(index / 24, E_from_CC / 1E6, E_from_solar / 1E6,
                   colors=['m', 'tab:orange'])
 
-    plt.xlabel('hour number')
-    plt.ylabel('Electricity Produced in W')
+    plt.xlabel('Day in year', fontsize = 14, fontweight = 'bold')
+    plt.ylabel('Electricity Produced in MW', fontsize = 14, fontweight = 'bold')
     plt.legend()
+    axes = plt.gca()
+    axes.set_ylim([0, 2])
     plt.show()
+
     #  weekly
 
     df1_PPA = df_PPA[(df_PPA['index'] >= week * 7 * 24) & (df_PPA['index'] <= (week + 1) * 7 * 24)]
@@ -150,12 +145,12 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     plt.plot([], [], color='g', label='Sewage', linewidth=5)
 
 
-    plt.stackplot(index, Q_from_storage, Q_from_PV, Q_from_additional_boiler + Q_from_base_boiler + Q_from_peak_boiler,
-                  Q_from_CC, Q_from_furnace, Q_from_GHP, Q_from_lake, Q_from_sewage,
+    plt.stackplot(index / 24, Q_from_storage / 1E6, Q_from_PV / 1E6, (Q_from_additional_boiler + Q_from_base_boiler + Q_from_peak_boiler) / 1E6,
+                  Q_from_CC / 1E6, Q_from_furnace / 1E6, Q_from_GHP / 1E6, Q_from_lake / 1E6, Q_from_sewage / 1E6,
                   colors=['b', 'tab:orange', 'c', 'm', 'y', 'k', 'r', 'g'])
 
-    plt.xlabel('hour number')
-    plt.ylabel('Thermal Energy in W')
+    plt.xlabel('Day in year', fontsize = 14, fontweight = 'bold')
+    plt.ylabel('Thermal Energy in MW', fontsize = 14, fontweight = 'bold')
     plt.legend()
 
     E_from_CC = df1_PPA['E_CC_gen_W']
@@ -164,12 +159,14 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     plt.subplot(2, 1, 2)
     plt.plot([], [], color='m', label='CC', linewidth=5)
     plt.plot([], [], color='tab:orange', label='Solar', linewidth=5)
-    plt.stackplot(index, E_from_CC, E_from_solar,
+    plt.stackplot(index / 24, E_from_CC / 1E6, E_from_solar / 1E6,
                   colors=['m', 'tab:orange'])
 
-    plt.xlabel('hour number')
-    plt.ylabel('Electricity Produced in W')
+    plt.xlabel('Day in year', fontsize = 14, fontweight = 'bold')
+    plt.ylabel('Electricity Produced in MW', fontsize = 14, fontweight = 'bold')
     plt.legend()
+    axes = plt.gca()
+    axes.set_ylim([0, 2])
     plt.show()
 
     print (''.join(str(pop_individual[i]) for i in xrange(len(pop_individual))))
@@ -184,9 +181,9 @@ if __name__ == '__main__':
     locator = cea.inputlocator.InputLocator(scenario_path)
 
     generation = 1
-    individual = 5
+    individual = 4
     yearly = True
-    week = 10
+    week = 15
 
     individual = individual - 1
     load_profile_plot(locator, generation, individual, week, yearly)
