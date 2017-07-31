@@ -112,7 +112,7 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     plt.ylabel('Electricity Produced in MW', fontsize = 14, fontweight = 'bold')
     plt.legend()
     axes = plt.gca()
-    axes.set_ylim([0, 2])
+    # axes.set_ylim([0, 7])
     plt.show()
 
     #  weekly
@@ -166,7 +166,7 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     plt.ylabel('Electricity Produced in MW', fontsize = 14, fontweight = 'bold')
     plt.legend()
     axes = plt.gca()
-    axes.set_ylim([0, 2])
+    # axes.set_ylim([0, 7])
     plt.show()
 
     print (''.join(str(pop_individual[i]) for i in xrange(len(pop_individual))))
@@ -180,10 +180,10 @@ if __name__ == '__main__':
     scenario_path = gv.scenario_reference
     locator = cea.inputlocator.InputLocator(scenario_path)
 
-    generation = 1
-    individual = 4
+    generation = 20
+    individual = 7
     yearly = True
-    week = 15
+    week = 10
 
     individual = individual - 1
     load_profile_plot(locator, generation, individual, week, yearly)
