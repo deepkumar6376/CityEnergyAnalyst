@@ -38,7 +38,7 @@ def load_profile_plot(locator, generation, individual, week, yearly):
         for name in ['QEf_kWh', 'QHf_kWh', 'QCf_kWh', 'Ef_kWh']:
             building_total[name] = building_total[name] + building_demand_results[name]
 
-    print (building_total['QEf_kWh'])
+    # print (building_total['QEf_kWh'])
     building_total['index'] = xrange(8760)
 
     with open(locator.get_optimization_master_results_folder() + "\CheckPoint_" + str(generation), "rb") as fp:
@@ -106,7 +106,7 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     E_zeros = np.zeros(8760)
     E_from_grid = (E_without_buildings + E_from_buildings - E_from_CC - E_from_solar)
     E_from_grid[E_from_grid < 0] = 0
-    print (E_from_grid)
+
 
     plt.subplot(2, 1, 2)
     plt.plot([], [], color='m', label='CC', linewidth=5)
@@ -169,7 +169,8 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     E_from_buildings = building_total_1['Ef_kWh'] * 1000
     E_zeros = np.zeros(8760)
     E_from_grid = (E_without_buildings + E_from_buildings - E_from_CC - E_from_solar)
-    E_from_grid[E_from_grid < 0] = 0
+    print (E_from_grid)
+    # E_from_grid[E_from_grid < 0] = 0
 
     plt.subplot(2, 1, 2)
     plt.plot([], [], color='m', label='CC', linewidth=5)
@@ -182,7 +183,7 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     plt.ylabel('Electricity in MW', fontsize = 14, fontweight = 'bold')
     plt.legend()
     axes = plt.gca()
-    # axes.set_ylim([0, 7])
+    axes.set_ylim([-7, 7])
     plt.show()
 
     print (''.join(str(pop_individual[i]) for i in xrange(len(pop_individual))))
@@ -199,7 +200,7 @@ if __name__ == '__main__':
     generation = 20
     individual = 4
     yearly = True
-    week = 10
+    week = 15
 
     individual = individual - 1
     load_profile_plot(locator, generation, individual, week, yearly)
