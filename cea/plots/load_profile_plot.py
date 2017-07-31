@@ -101,15 +101,23 @@ def load_profile_plot(locator, generation, individual, week, yearly):
     #  electricity
     E_from_CC = df_PPA['E_CC_gen_W']
     E_from_solar = df_PPA['E_solar_gen_W']
+    E_without_buildings = df_PPA['E_consumed_without_buildingdemand_W']
+    E_from_buildings = building_total['Ef_kWh'] * 1000
+    E_zeros = np.zeros(8760)
+    E_from_grid = (E_without_buildings + E_from_buildings - E_from_CC - E_from_solar)
+    E_from_grid[E_from_grid < 0] = 0
+    print (E_from_grid)
 
     plt.subplot(2, 1, 2)
     plt.plot([], [], color='m', label='CC', linewidth=5)
     plt.plot([], [], color='tab:orange', label='Solar', linewidth=5)
-    plt.stackplot(index / 24, E_from_CC / 1E6, E_from_solar / 1E6,
-                  colors=['m', 'tab:orange'])
+    plt.plot([], [], color='tab:brown', label='Grid', linewidth=5)
+    plt.stackplot(index / 24, E_from_CC / 1E6, E_from_solar / 1E6, E_from_grid / 1E6,
+                  colors=['m', 'tab:orange', 'tab:brown'])
+
 
     plt.xlabel('Day in year', fontsize = 14, fontweight = 'bold')
-    plt.ylabel('Electricity Produced in MW', fontsize = 14, fontweight = 'bold')
+    plt.ylabel('Electricity in MW', fontsize = 14, fontweight = 'bold')
     plt.legend()
     axes = plt.gca()
     # axes.set_ylim([0, 7])
@@ -119,6 +127,8 @@ def load_profile_plot(locator, generation, individual, week, yearly):
 
     df1_PPA = df_PPA[(df_PPA['index'] >= week * 7 * 24) & (df_PPA['index'] <= (week + 1) * 7 * 24)]
     df1_SO = df_SO[(df_SO['index'] >= week * 7 * 24) & (df_SO['index'] <= (week + 1) * 7 * 24)]
+    building_total_1 = building_total[(building_total['index'] >= week * 7 * 24) & (building_total['index'] <= (week + 1) * 7 * 24)]
+
     index = df1_PPA['index']
 
     network_demand = df1_SO['Q_DH_networkload_W']
@@ -155,15 +165,21 @@ def load_profile_plot(locator, generation, individual, week, yearly):
 
     E_from_CC = df1_PPA['E_CC_gen_W']
     E_from_solar = df1_PPA['E_solar_gen_W']
+    E_without_buildings = df1_PPA['E_consumed_without_buildingdemand_W']
+    E_from_buildings = building_total_1['Ef_kWh'] * 1000
+    E_zeros = np.zeros(8760)
+    E_from_grid = (E_without_buildings + E_from_buildings - E_from_CC - E_from_solar)
+    E_from_grid[E_from_grid < 0] = 0
 
     plt.subplot(2, 1, 2)
     plt.plot([], [], color='m', label='CC', linewidth=5)
     plt.plot([], [], color='tab:orange', label='Solar', linewidth=5)
-    plt.stackplot(index / 24, E_from_CC / 1E6, E_from_solar / 1E6,
-                  colors=['m', 'tab:orange'])
+    plt.plot([], [], color='tab:brown', label='Grid', linewidth=5)
+    plt.stackplot(index / 24, E_from_CC / 1E6, E_from_solar / 1E6, E_from_grid / 1E6,
+                  colors=['m', 'tab:orange', 'tab:brown'])
 
     plt.xlabel('Day in year', fontsize = 14, fontweight = 'bold')
-    plt.ylabel('Electricity Produced in MW', fontsize = 14, fontweight = 'bold')
+    plt.ylabel('Electricity in MW', fontsize = 14, fontweight = 'bold')
     plt.legend()
     axes = plt.gca()
     # axes.set_ylim([0, 7])
@@ -181,7 +197,7 @@ if __name__ == '__main__':
     locator = cea.inputlocator.InputLocator(scenario_path)
 
     generation = 20
-    individual = 7
+    individual = 4
     yearly = True
     week = 10
 
