@@ -18,6 +18,8 @@ from deap import base
 from deap import creator
 from deap import tools
 
+import cea.optimization.optimization_settings
+
 import cea.optimization.master.generation as generation
 import mutations as mut
 import selection as sel
@@ -69,6 +71,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     :rtype: pickled file
     """
     t0 = time.clock()
+    settings = cea.optimization.optimization_settings.optimization_settings()
 
     # get number of buildings
     nBuildings = len(building_names)
@@ -84,7 +87,10 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     creator.create("Fitness", base.Fitness, weights=(-1.0, -1.0, -1.0))
     creator.create("Individual", list, fitness=creator.Fitness)
     toolbox = base.Toolbox()
-    toolbox.register("generate", generation.generate_main, nBuildings, gv)
+    lower_bound = settings.lower_bound
+    upper_bound = settings.upper_bound
+
+    toolbox.register("generate", generation.generate_main, nBuildings, settings)
     toolbox.register("individual", tools.initIterate, creator.Individual, toolbox.generate)
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     toolbox.register("evaluate", objective_function)
@@ -96,7 +102,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     # Evolutionary strategy
     if genCP is 0:
         # create population
-        pop = toolbox.population(n=gv.initialInd)
+        pop = toolbox.population(n=settings.initialInd)
 
         # Check distribution
         for ind in pop:
@@ -127,13 +133,13 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
             ntwList = cp["networkList"]
             epsInd = cp["epsIndicator"]
 
-    PROBA, SIGMAP = gv.PROBA, gv.SIGMAP
+    PROBA, SIGMAP = settings.PROBA, settings.SIGMAP
 
     # Evolution starts !
     g = genCP
     stopCrit = False # Threshold for the Epsilon indicator, Not used
 
-    while g < gv.NGEN and not stopCrit and ( time.clock() - t0 ) < gv.maxTime :
+    while g < settings.NGEN and not stopCrit and ( time.clock() - t0 ) < settings.maxTime :
 
         g += 1
         print "Generation", g
@@ -146,27 +152,31 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
             child1, child2 = cx.cxUniform(ind1, ind2, PROBA, gv)
             offspring += [child1, child2]
 
-        # First half of the master: create new un-correlated configurations
-        if g < gv.NGEN/2:
-            for mutant in pop:
-                print "Mutation Flip"
-                offspring.append(mut.mutFlip(mutant, PROBA, gv))
-                print "Mutation Shuffle"
-                offspring.append(mut.mutShuffle(mutant, PROBA, gv))
-                print "Mutation GU \n"
-                offspring.append(mut.mutGU(mutant, PROBA, gv))
+        for mutant in pop:
+            offspring.append(mut.mutPolynomialBounded(mutant, lower_bound, upper_bound, eta=20, indpb=1/len(lower_bound)))
 
-        # Third quarter of the master: keep the good individuals but modify the shares uniformly
-        elif g < gv.NGEN * 3/4:
-            for mutant in pop:
-                print "Mutation Uniform"
-                offspring.append(mut.mutUniformCap(mutant, gv))
-
-        # Last quarter: keep the very good individuals and modify the shares with Gauss distribution
-        else:
-            for mutant in pop:
-                print "Mutation Gauss"
-                offspring.append(mut.mutGaussCap(mutant, SIGMAP, gv))
+        #
+        # # First half of the master: create new un-correlated configurations
+        # if g < gv.NGEN/2:
+        #     for mutant in pop:
+        #         print "Mutation Flip"
+        #         offspring.append(mut.mutFlip(mutant, PROBA, gv))
+        #         print "Mutation Shuffle"
+        #         offspring.append(mut.mutShuffle(mutant, PROBA, gv))
+        #         print "Mutation GU \n"
+        #         offspring.append(mut.mutGU(mutant, PROBA, gv))
+        #
+        # # Third quarter of the master: keep the good individuals but modify the shares uniformly
+        # elif g < gv.NGEN * 3/4:
+        #     for mutant in pop:
+        #         print "Mutation Uniform"
+        #         offspring.append(mut.mutUniformCap(mutant, gv))
+        #
+        # # Last quarter: keep the very good individuals and modify the shares with Gauss distribution
+        # else:
+        #     for mutant in pop:
+        #         print "Mutation Gauss"
+        #         offspring.append(mut.mutGaussCap(mutant, SIGMAP, gv))
 
 
         # Evaluate the individuals with an invalid fitness

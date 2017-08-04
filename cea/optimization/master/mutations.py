@@ -7,8 +7,10 @@ Mutation routines
 from __future__ import division
 import random
 from deap import base
+import cea.optimization.optimization_settings
 
 toolbox = base.Toolbox()
+settings = cea.optimization.optimization_settings.optimization_settings()
 
 
 def mutFlip(individual, proba, gv):
@@ -283,5 +285,48 @@ def mutGU(individual, proba, gv):
     return mutant
 
 
+def mutPolynomialBounded(individual, lower_bound, upper_bound, eta, indpb):
 
+    size = len(individual)
+
+    for i, xl, xu in zip(xrange(size), lower_bound, upper_bound):
+        if random.random() <= indpb:
+            x = individual[i]
+            delta_1 = (x - xl) / (xu - xl)
+            delta_2 = (xu - x) / (xu - xl)
+            rand = random.random()
+            mut_pow = 1.0 / (eta + 1.)
+
+            if rand < 0.5:
+                xy = 1.0 - delta_1
+                val = 2.0 * rand + (1.0 - 2.0 * rand) * xy ** (eta + 1)
+                delta_q = val ** mut_pow - 1.0
+            else:
+                xy = 1.0 - delta_2
+                val = 2.0 * (1.0 - rand) + 2.0 * (rand - 0.5) * xy ** (eta + 1)
+                delta_q = 1.0 - val ** mut_pow
+
+            x = x + delta_q * (xu - xl)
+            x = min(max(x, xl), xu)
+            individual[i] = x
+
+    for j in xrange(settings.nHeat):  # for activating energy systems
+
+        individual[2*j] = int(round(individual[2*j]))
+
+    for j in xrange(settings.nHR):  # for recovery options
+
+        individual[j+12] = int(round(individual[j+12]))
+
+    for j in xrange(settings.nSolar):  # for solar options
+
+        individual[2*j+14] = int(round(individual[2*j+14]))
+
+    for j in xrange(settings.nBuildings):
+
+        individual[21+j] = int(round(individual[21+j]))
+
+    del individual.fitness.values
+
+    return individual
 
