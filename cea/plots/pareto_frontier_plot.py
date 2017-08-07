@@ -5,6 +5,7 @@ import matplotlib.cm as cmx
 import matplotlib.pyplot as plt
 import pickle
 import deap
+import json
 
 __author__ = "Jimeno A. Fonseca"
 __copyright__ = "Copyright 2017, Architecture and Building Systems - ETH Zurich"
@@ -90,3 +91,111 @@ def frontier_2D_3OB(input_path, what_to_plot, output_path, labelx, labely, label
         plt.show()
     plt.close(fig)
     return
+
+def test_graphs_optimization(generation):
+    import cea.globalvar
+    import cea.inputlocator
+    import csv
+    import json
+    import matplotlib
+    import matplotlib.cm as cmx
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+    import os
+    import re
+
+    gv = cea.globalvar.GlobalVariables()
+    scenario_path = gv.scenario_reference
+    locator = cea.inputlocator.InputLocator(scenario_path)
+    os.chdir(locator.get_optimization_master_results_folder())
+    pareto = []
+    xs = []
+    ys = []
+    zs = []
+    if generation is 'all':
+        for i in xrange(gv.NGEN):
+            with open("CheckPoint_" + str(i+1), "rb") as fp:
+                data = json.load(fp)
+                objective_function = data['population_fitness']
+                print (objective_function)
+                print (objective_function[1][1])
+                for j in xrange(gv.initialInd):
+                    xs.append((objective_function[j][0]))
+                    ys.append((objective_function[j][1]))
+                    zs.append((objective_function[j][2]))
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.scatter(xs, ys, zs, c='r', marker='o')
+        ax.set_xlabel('TAC [EU/m2.yr]')
+        ax.set_ylabel('CO2 [kg-CO2/m2.yr]')
+        ax.set_zlabel('PEN [MJ/m2.yr]')
+        os.chdir(locator.get_optimization_plots_folder())
+        plt.savefig("Generation" + str(generation) + "Pareto_Front_3D.png")
+        plt.show()
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        cm = plt.get_cmap('jet')
+        cNorm = matplotlib.colors.Normalize(vmin=min(zs), vmax=max(zs))
+        scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=cm)
+        ax.scatter(xs, ys, c=scalarMap.to_rgba(zs), s=50, alpha=0.8)
+        ax.set_xlabel('TAC [EU/m2.yr]')
+        ax.set_ylabel('CO2 [kg-CO2/m2.yr]')
+
+        scalarMap.set_array(zs)
+        fig.colorbar(scalarMap, label='PEN [MJ/m2.yr]')
+        plt.grid(True)
+        plt.rcParams['figure.figsize'] = (6, 4)
+        plt.rcParams.update({'font.size': 12})
+        plt.gcf().subplots_adjust(bottom=0.15)
+        plt.savefig("Generation" + str(generation) + "Pareto_Front_2D.png")
+        plt.show()
+        plt.clf()
+
+    else:
+        with open("CheckPoint_" + str(generation), "rb") as fp:
+            data = json.load(fp)
+            objective_function = data['population_fitness']
+            print (objective_function)
+            print (objective_function[1][1])
+            for j in xrange(gv.initialInd):
+                xs.append((objective_function[j][0]))
+                ys.append((objective_function[j][1]))
+                zs.append((objective_function[j][2]))
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection='3d')
+            ax.scatter(xs, ys, zs, c='r', marker='o')
+            ax.set_xlabel('TAC [EU/m2.yr]')
+            ax.set_ylabel('CO2 [kg-CO2/m2.yr]')
+            ax.set_zlabel('PEN [MJ/m2.yr]')
+            os.chdir(locator.get_optimization_plots_folder())
+            plt.savefig("Generation" + str(generation) + "Pareto_Front_3D.png")
+            plt.show()
+
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            cm = plt.get_cmap('jet')
+            cNorm = matplotlib.colors.Normalize(vmin=min(zs), vmax=max(zs))
+            scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=cm)
+            ax.scatter(xs, ys, c=scalarMap.to_rgba(zs), s=50, alpha=0.8)
+            ax.set_xlabel('TAC [EU/m2.yr]')
+            ax.set_ylabel('CO2 [kg-CO2/m2.yr]')
+
+            scalarMap.set_array(zs)
+            fig.colorbar(scalarMap, label='PEN [MJ/m2.yr]')
+            plt.grid(True)
+            plt.rcParams['figure.figsize'] = (6, 4)
+            plt.rcParams.update({'font.size': 12})
+            plt.gcf().subplots_adjust(bottom=0.15)
+            plt.savefig("Generation" + str(generation) + "Pareto_Front_2D.png")
+            plt.show()
+            plt.clf()
+    return
+
+if __name__ == '__main__':
+    generation = 50
+    test_graphs_optimization(generation)
+
+
+
