@@ -193,6 +193,7 @@ if __name__ == '__main__':
     pop = 10  # total population in the generation
 
     # path reference to where the saved generation files are present
+    file_path = r'C:\reference-case-zug\baseline\outputs\Mutation and Crossover\As usual\Run 1\data\optimization\master'
     # path reference to where the plot files need to be saved
     save_path = r'C:\reference-case-zug\baseline\outputs\Mutation and Crossover\Plots'
     test_graphs_optimization(generation, file_path, NGEN, save_path, pop)
