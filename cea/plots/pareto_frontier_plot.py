@@ -92,34 +92,28 @@ def frontier_2D_3OB(input_path, what_to_plot, output_path, labelx, labely, label
     plt.close(fig)
     return
 
-def test_graphs_optimization(generation):
-    import cea.globalvar
-    import cea.inputlocator
-    import csv
+def test_graphs_optimization(generation, file_path, NGEN, save_path, pop):
+
     import json
     import matplotlib
     import matplotlib.cm as cmx
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
     import os
-    import re
 
-    gv = cea.globalvar.GlobalVariables()
-    scenario_path = gv.scenario_reference
-    locator = cea.inputlocator.InputLocator(scenario_path)
-    os.chdir(locator.get_optimization_master_results_folder())
-    pareto = []
+
+    os.chdir(file_path)
     xs = []
     ys = []
     zs = []
     if generation is 'all':
-        for i in xrange(gv.NGEN):
+        for i in xrange(NGEN):
             with open("CheckPoint_" + str(i+1), "rb") as fp:
                 data = json.load(fp)
                 objective_function = data['population_fitness']
                 print (objective_function)
                 print (objective_function[1][1])
-                for j in xrange(gv.initialInd):
+                for j in xrange(pop):
                     xs.append((objective_function[j][0]))
                     ys.append((objective_function[j][1]))
                     zs.append((objective_function[j][2]))
@@ -130,7 +124,7 @@ def test_graphs_optimization(generation):
         ax.set_xlabel('TAC [EU/m2.yr]')
         ax.set_ylabel('CO2 [kg-CO2/m2.yr]')
         ax.set_zlabel('PEN [MJ/m2.yr]')
-        os.chdir(locator.get_optimization_plots_folder())
+        os.chdir(save_path)
         plt.savefig("Generation" + str(generation) + "Pareto_Front_3D.png")
         plt.show()
 
@@ -159,7 +153,7 @@ def test_graphs_optimization(generation):
             objective_function = data['population_fitness']
             print (objective_function)
             print (objective_function[1][1])
-            for j in xrange(gv.initialInd):
+            for j in xrange(pop):
                 xs.append((objective_function[j][0]))
                 ys.append((objective_function[j][1]))
                 zs.append((objective_function[j][2]))
@@ -169,7 +163,7 @@ def test_graphs_optimization(generation):
             ax.set_xlabel('TAC [EU/m2.yr]')
             ax.set_ylabel('CO2 [kg-CO2/m2.yr]')
             ax.set_zlabel('PEN [MJ/m2.yr]')
-            os.chdir(locator.get_optimization_plots_folder())
+            os.chdir(save_path)
             plt.savefig("Generation" + str(generation) + "Pareto_Front_3D.png")
             plt.show()
 
@@ -194,8 +188,14 @@ def test_graphs_optimization(generation):
     return
 
 if __name__ == '__main__':
-    generation = 50
-    test_graphs_optimization(generation)
+    generation = 50  # options of 'all' or the generation number for which the plot need to be developed
+    NGEN = 50  # total number of generations
+    pop = 10  # total population in the generation
+
+    # path reference to where the saved generation files are present
+    # path reference to where the plot files need to be saved
+    save_path = r'C:\reference-case-zug\baseline\outputs\Mutation and Crossover\Plots'
+    test_graphs_optimization(generation, file_path, NGEN, save_path, pop)
 
 
 
