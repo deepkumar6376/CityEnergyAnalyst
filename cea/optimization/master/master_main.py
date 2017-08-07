@@ -152,31 +152,33 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
             child1, child2 = cx.cxUniform(ind1, ind2, PROBA, gv)
             offspring += [child1, child2]
 
-        for mutant in pop:
-            offspring.append(mut.mutPolynomialBounded(mutant, lower_bound, upper_bound, eta=20, indpb=1/len(lower_bound)))
+        # for mutant in pop:
+        #     offspring.append(mut.mutPolynomialBounded(mutant, lower_bound, upper_bound, eta=20, indpb=1/len(lower_bound)))
 
-        #
-        # # First half of the master: create new un-correlated configurations
-        # if g < gv.NGEN/2:
-        #     for mutant in pop:
-        #         print "Mutation Flip"
-        #         offspring.append(mut.mutFlip(mutant, PROBA, gv))
-        #         print "Mutation Shuffle"
-        #         offspring.append(mut.mutShuffle(mutant, PROBA, gv))
-        #         print "Mutation GU \n"
-        #         offspring.append(mut.mutGU(mutant, PROBA, gv))
-        #
-        # # Third quarter of the master: keep the good individuals but modify the shares uniformly
-        # elif g < gv.NGEN * 3/4:
-        #     for mutant in pop:
-        #         print "Mutation Uniform"
-        #         offspring.append(mut.mutUniformCap(mutant, gv))
-        #
-        # # Last quarter: keep the very good individuals and modify the shares with Gauss distribution
-        # else:
-        #     for mutant in pop:
-        #         print "Mutation Gauss"
-        #         offspring.append(mut.mutGaussCap(mutant, SIGMAP, gv))
+
+        # First half of the master: create new un-correlated configurations
+        if g < gv.NGEN/2:
+            for mutant in pop:
+                print "Mutation Flip"
+                mutant = mut.mutFlip(mutant, PROBA, gv)
+                # offspring.append(mut.mutFlip(mutant, PROBA, gv))
+                print "Mutation Shuffle"
+                mutant = mut.mutShuffle(mutant, PROBA, gv)
+                # offspring.append(mut.mutShuffle(mutant, PROBA, gv))
+                print "Mutation GU \n"
+                offspring.append(mut.mutGU(mutant, PROBA, gv))
+
+        # Third quarter of the master: keep the good individuals but modify the shares uniformly
+        elif g < gv.NGEN * 3/4:
+            for mutant in pop:
+                print "Mutation Uniform"
+                offspring.append(mut.mutUniformCap(mutant, gv))
+
+        # Last quarter: keep the very good individuals and modify the shares with Gauss distribution
+        else:
+            for mutant in pop:
+                print "Mutation Gauss"
+                offspring.append(mut.mutGaussCap(mutant, SIGMAP, gv))
 
 
         # Evaluate the individuals with an invalid fitness
