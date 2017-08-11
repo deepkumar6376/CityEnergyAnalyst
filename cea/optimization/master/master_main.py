@@ -157,7 +157,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
 
 
         # First half of the master: create new un-correlated configurations
-        if g < gv.NGEN/2:
+        if g <= gv.NGEN:
             for mutant in pop:
                 print "Mutation Flip"
                 mutant = mut.mutFlip(mutant, PROBA, gv)
@@ -168,17 +168,17 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
                 print "Mutation GU \n"
                 offspring.append(mut.mutGU(mutant, PROBA, gv))
 
-        # Third quarter of the master: keep the good individuals but modify the shares uniformly
-        elif g < gv.NGEN * 3/4:
-            for mutant in pop:
-                print "Mutation Uniform"
-                offspring.append(mut.mutUniformCap(mutant, gv))
-
-        # Last quarter: keep the very good individuals and modify the shares with Gauss distribution
-        else:
-            for mutant in pop:
-                print "Mutation Gauss"
-                offspring.append(mut.mutGaussCap(mutant, SIGMAP, gv))
+        # # Third quarter of the master: keep the good individuals but modify the shares uniformly
+        # elif g < gv.NGEN * 3/4:
+        #     for mutant in pop:
+        #         print "Mutation Uniform"
+        #         offspring.append(mut.mutUniformCap(mutant, gv))
+        # 
+        # # Last quarter: keep the very good individuals and modify the shares with Gauss distribution
+        # else:
+        #     for mutant in pop:
+        #         print "Mutation Gauss"
+        #         offspring.append(mut.mutGaussCap(mutant, SIGMAP, gv))
 
 
         # Evaluate the individuals with an invalid fitness
