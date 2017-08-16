@@ -714,7 +714,7 @@ def least_cost_main(locator, master_to_slave_vars, solar_features, gv):
             "cost_HP_aux_uncontrollable": [cost_HP_aux_uncontrollable],
             "cost_HP_storage_operation": [cost_HP_storage_operation]
         })
-        results.to_csv(locator.get_optimization_slave_slave_cost_data(MS_Var.configKey), sep=',')
+        # results.to_csv(locator.get_optimization_slave_slave_cost_data(MS_Var.configKey), sep=',')
         print "Slave to Master Variables saved in : ", locator.get_optimization_slave_results_folder()
         print " as : ", MS_Var.configKey + "_SlaveCostData.csv"
 
@@ -751,7 +751,7 @@ def least_cost_main(locator, master_to_slave_vars, solar_features, gv):
             "avgCostStorageOperation": [avgCostStorageOperation]
         })
 
-        results.to_csv(locator.get_optimization_slave_averaged_cost_data(MS_Var.configKey), sep=',')
+        # results.to_csv(locator.get_optimization_slave_averaged_cost_data(MS_Var.configKey), sep=',')
 
         print "Averaged Cost Results saved in : ", locator.get_optimization_slave_results_folder()
         print " as : ", MS_Var.configKey + "AveragedCostData.csv"
@@ -1087,7 +1087,7 @@ def calc_primary_energy_and_CO2(Q_source_data, Q_coldsource_data, E_PP_el_data,
                             "CO2_from_HPSolarandHearRecovery":[CO2_from_HPSolarandHearRecovery],
                             "CO2_from_HP_StorageOperationChDeCh":[CO2_from_HP_StorageOperationChDeCh]
                             })
-    results.to_csv(locator.get_optimization_slave_slave_detailed_emission_data(MS_Var.configKey), sep=',')
+    # results.to_csv(locator.get_optimization_slave_slave_detailed_emission_data(MS_Var.configKey), sep=',')
 
     #CO2_from_AuxElectricity= (E_aux_AddBoilerSum + E_el_Backup + E_el_BoilerBase) * Electricity_to_CO2 # Not used as the conversion factors
     #                                                                                           of the machinery takes into account final energy
@@ -1162,7 +1162,7 @@ def calc_primary_energy_and_CO2(Q_source_data, Q_coldsource_data, E_PP_el_data,
                             "Eprim_from_HPSolarandHearRecovery":[Eprim_from_HPSolarandHearRecovery],
                             "Eprim_from_HP_StorageOperationChDeCh":[Eprim_from_HP_StorageOperationChDeCh]
                             })
-    results.to_csv(locator.get_optimization_slave_slave_detailed_e_prim_data(MS_Var.configKey), sep=',')
+    # results.to_csv(locator.get_optimization_slave_slave_detailed_e_prim_data(MS_Var.configKey), sep=',')
 
     ######### Summed up results    
     CO2_emitted     = (CO2_from_HP + CO2_from_gas + CO2_from_wood + CO2_from_elec_sold + CO2_from_SCandPVT + CO2_from_elec_usedAuxBoilersAll\
