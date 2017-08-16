@@ -101,8 +101,9 @@ def test_graphs_optimization(generation, file_path, NGEN, save_path, pop):
     from mpl_toolkits.mplot3d import Axes3D
     import os
 
+    folder = file_path + '\Run 1\data\optimization\master'
 
-    os.chdir(file_path)
+    os.chdir(folder)
     xs = []
     ys = []
     zs = []
@@ -187,16 +188,132 @@ def test_graphs_optimization(generation, file_path, NGEN, save_path, pop):
             plt.clf()
     return
 
+def multi_run_results_compilation(generation, file_path, save_path, pop, runs):
+
+    import json
+    import matplotlib
+    import matplotlib.cm as cmx
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+    import os
+
+    xs = []
+    ys = []
+    zs = []
+    for i in xrange(runs):
+        i = i+1
+        folder = file_path + '\Run ' + str(i) + '\data\optimization\master'
+        os.chdir(folder)
+        with open("CheckPoint_Final", "rb") as fp:
+            data = json.load(fp)
+            objective_function = data['population_fitness']
+            for j in xrange(pop):
+                xs.append((objective_function[j][0]))
+                ys.append((objective_function[j][1]))
+                zs.append((objective_function[j][2]))
+    xs = [x / 1000000 for x in xs]
+    ys = [y / 1000000 for y in ys]
+    zs = [z / 1000000 for z in zs]
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(xs, ys, zs, c='r', marker='o')
+    ax.set_xlabel('TAC [million EU/m2.yr]')
+    ax.set_ylabel('CO2 [million kg-CO2/m2.yr]')
+    ax.set_zlabel('PEN [million MJ/m2.yr]')
+    plt.xlim((4, 11))
+    plt.ylim(5, 20)
+    os.chdir(save_path)
+    plt.savefig("all generation with combined mutation strategy"+ "Pareto_Front_3D.png")
+    plt.show()
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    cm = plt.get_cmap('jet')
+    cNorm = matplotlib.colors.Normalize(vmin=min(zs), vmax=max(zs))
+    scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=cm)
+    ax.scatter(xs, ys, c=scalarMap.to_rgba(zs), s=50, alpha=0.8)
+    ax.set_xlabel('TAC [million EU/m2.yr]')
+    ax.set_ylabel('CO2 [million kg-CO2/m2.yr]')
+    plt.xlim((4, 11))
+    plt.ylim(5, 20)
+
+    scalarMap.set_array(zs)
+    fig.colorbar(scalarMap, label='PEN [million MJ/m2.yr]')
+    plt.grid(True)
+    plt.rcParams['figure.figsize'] = (6, 4)
+    plt.rcParams.update({'font.size': 12})
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.savefig("all generation with combined mutation strategy" + "Pareto_Front_2D.png")
+    plt.show()
+    plt.clf()
+
+    print (xs)
+    print (len(xs))
+    return
+
+def Pareto_progression_over_generations(file_path, save_path, pop, NGEN):
+
+    import json
+    import matplotlib
+    import matplotlib.cm as cmx
+    import matplotlib.pyplot as plt
+    import os
+
+    xs = []
+    ys = []
+    zs = []
+    for i in [5,50]:
+        folder = file_path + '\Run 2\data\optimization\master'
+        os.chdir(folder)
+        with open("CheckPoint_" + str(i), "rb") as fp:
+            data = json.load(fp)
+            objective_function = data['population_fitness']
+            for j in xrange(pop):
+                xs.append((objective_function[j][0]))
+                ys.append((objective_function[j][1]))
+                zs.append((objective_function[j][2]))
+    xs = [x / 1000000 for x in xs]
+    ys = [y / 1000000 for y in ys]
+    zs = [z / 1000000 for z in zs]
+
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    cm = plt.get_cmap('jet')
+    cNorm = matplotlib.colors.Normalize(vmin=min(zs), vmax=max(zs))
+    scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=cm)
+    ax.scatter(xs, ys, c=scalarMap.to_rgba(zs), s=50, alpha=0.8)
+    ax.set_xlabel('TAC [million EU/m2.yr]')
+    ax.set_ylabel('CO2 [million kg-CO2/m2.yr]')
+    plt.xlim((4, 11))
+    plt.ylim(5, 20)
+
+    scalarMap.set_array(zs)
+    fig.colorbar(scalarMap, label='PEN [million MJ/m2.yr]')
+    plt.grid(True)
+    plt.rcParams['figure.figsize'] = (6, 4)
+    plt.rcParams.update({'font.size': 12})
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.savefig("all generation with combined mutation strategy" + "Pareto_Front_2D.png")
+    plt.show()
+    plt.clf()
+
+    print (xs)
+    print (len(xs))
+    return
+
 if __name__ == '__main__':
     generation = 50  # options of 'all' or the generation number for which the plot need to be developed
     NGEN = 50  # total number of generations
     pop = 10  # total population in the generation
+    runs = 10
 
     # path reference to where the saved generation files are present
-    file_path = r'C:\reference-case-zug\baseline\outputs\Mutation and Crossover\As usual\Run 1\data\optimization\master'
+    file_path = r'C:\reference-case-zug\baseline\outputs\Mutation and Crossover\all generation with combined mutation strategy'
     # path reference to where the plot files need to be saved
     save_path = r'C:\reference-case-zug\baseline\outputs\Mutation and Crossover\Plots'
-    test_graphs_optimization(generation, file_path, NGEN, save_path, pop)
-
+    # test_graphs_optimization(generation, file_path, NGEN, save_path, pop)
+    # multi_run_results_compilation(generation, file_path, save_path, pop, runs)
+    Pareto_progression_over_generations(file_path, save_path, pop, NGEN)
 
 
