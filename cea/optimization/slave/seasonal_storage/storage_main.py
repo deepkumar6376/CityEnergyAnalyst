@@ -180,10 +180,7 @@ def storage_optimization(locator, master_to_slave_vars, gv):
             storageDeviation5 = (abs(InitialStorageContent - FinalStorageContent) / FinalStorageContent)
 
         if storageDeviation5 > 0.01:
-            print "occured storage deviation", storageDeviation5
-            print "---------------------------------------------------------------"
-            print "\n ---------------------------------------------------------------"
-            print " STORAGE EVALUATION NEEDED 6th ROUND"
+
             Q_initial = min(Q_disc_seasonstart_opt5[0], Q_storage_content_fin_op5[-1])
 
             Q_stored_max_needed_6 = float(
@@ -208,56 +205,9 @@ def storage_optimization(locator, master_to_slave_vars, gv):
             else:
                 storageDeviation6 = (abs(InitialStorageContent - FinalStorageContent) / FinalStorageContent)
 
-            print "new storage deviation: ", storageDeviation6
-            print "\n --------------- ------------------"
 
             if 0.05 < InitialStorageContent / abs(InitialStorageContent - FinalStorageContent):
                 result = pd.DataFrame([storageDeviation6, InitialStorageContent, FinalStorageContent])
-                # print "aa\n"
-                # print locator.get_optimization_slave_results_folder
-                # print MS_Var.configKey
-                # print result
-                # print os.path.join(locator.get_optimization_slave_results_folder, MS_Var.configKey + "_StorageFlag.csv")
-                # print "aa\n"
-                result.to_csv(locator.get_optimization_slave_storage_flag(MS_Var.configKey), sep=',')
 
-    """ EVALUATION AND FURTHER PROCESSING """
+                # result.to_csv(locator.get_optimization_slave_storage_flag(MS_Var.configKey), sep=',')
 
-    if Tempplot == 1:
-        fig = plt.figure()
-        initial = plt.plot(T_storage_fin - 273, label="Initial Run")
-        first = plt.plot(T_storage_fin_op - 273, label="Initial Run")
-        second = plt.plot(T_storage_fin_op2 - 273, label="Initial Run")
-        third = plt.plot(T_storage_fin_op3 - 273, label="Initial Run")
-        fourth = plt.plot(T_storage_fin_op4 - 273, label="Initial Run")
-        fifth = plt.plot(T_storage_fin_op5 - 273, label="Initial Run")
-        plt.xlabel('Hour in Year')
-        plt.ylabel('Temperature in degC')
-        fig.suptitle('Storage Optimization Runs', fontsize=15)
-        plt.legend(["initial", "first", "second", "third", "fourth", "fifth"], loc="best")
-
-        plt.show()
-
-    if Qplot == 1:
-        Q_storage_content_fin
-        fig = plt.figure()
-        initial = plt.plot(Q_storage_content_fin / 10E6, label="Initial Run")
-        first = plt.plot(Q_storage_content_fin_op / 10E6, label="Initial Run")
-        second = plt.plot(Q_storage_content_fin_op2 / 10E6, label="Initial Run")
-        third = plt.plot(Q_storage_content_fin_op3 / 10E6, label="Initial Run")
-        fourth = plt.plot(Q_storage_content_fin_op4 / 10E6, label="Initial Run")
-        fifth = plt.plot(Q_storage_content_fin_op5 / 10E6, label="Initial Run")
-        plt.xlabel('Hour in Year')
-        plt.ylabel('Energy in Storage MWh')
-        fig.suptitle('Storage Optimization Runs', fontsize=15)
-        plt.legend(["initial", "first", "second", "third", "fourth", "fifth"], loc="best")
-
-        plt.show()
-
-    # Save Files
-    # if save_file == 1:
-    #     results = pd.DataFrame({"Storage_Size_opt": [V5], "T_initial": [T_initial], "Q_initial": [Q_initial]})
-    #     Name = locator.get_optimization_slave_storage_sizing_parameters(MS_Var.configKey)
-    #     results.to_csv(Name, sep=',')
-    #     print "results saved in : ", locator.get_optimization_slave_results_folder()
-    #     print " as : ", Name, "\n"
