@@ -105,8 +105,8 @@ def prep_NN_inputs(NN_input,NN_target,NN_delays):
     nSS, nT = target1.shape
     nD=NN_delays
     aD=nD+1
-    inputn=np.zeros((nS+nD, aD*nF))
-    rowsF, colsF=inputn.shape
+    input_matrix_features=np.zeros((nS+nD, aD*nF))
+    rowsF, colsF=input_matrix_features.shape
     input_matrix_targets=np.zeros((nS+nD, nD))
 
     for i in range(1,aD):
@@ -118,11 +118,11 @@ def prep_NN_inputs(NN_input,NN_target,NN_delays):
         n2=(i*nT)+1
         print n1,n2
         print target1
-        inputn[j:aS, m1:m2]=input1
+        input_matrix_features[j:aS, m1:m2]=input1
         input_matrix_targets[j:aS, n1:n2]=target1
 
-    print inputn, input_matrix_targets
-    trimmed_inputn = inputn[aD:nS - 1,:]
+    print input_matrix_features, input_matrix_targets
+    trimmed_inputn = input_matrix_features[aD:nS - 1,:]
     trimmed_inputt = input_matrix_targets[aD:nS - 1, :]
     NN_input_ready=pd.concat([trimmed_inputn, trimmed_inputt], axis=1)
     NN_target_ready=target1[aD:nS,:]
