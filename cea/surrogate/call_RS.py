@@ -21,6 +21,7 @@ __maintainer__ = "Daren Thomas"
 __email__ = "cea@arch.ethz.ch"
 __status__ = "Production"
 
+all_results=[]
 def simulate_demand_sample(locator, building_name, output_parameters):
     """
     This script runs the cea demand tool in series and returns a single value of cvrmse and rmse.
@@ -43,12 +44,13 @@ def simulate_demand_sample(locator, building_name, output_parameters):
 
     #calculate demand timeseries for buidling an calculate cvrms
     demand_main.demand_calculation(locator, weather_path, gv)
+    file_path='C:\Reference-case-open\Baseline\outputs\data\demand\B153731.xls'
 
-
-    time_series_simulation = pd.read_csv(locator.get_demand_results_file(building_name), usecols=[output_parameters])
+    init_calcs = pd.read_excel(file_path)
+    new_calcs = pd.DataFrame(init_calcs)
     #cv_rmse, rmse = calc_cv_rmse(time_series_simulation[output_parameters].values, time_series_measured[output_parameters].values)
 
-    return  time_series_simulation #cv_rmse, rmse
+    return  new_calcs #cv_rmse, rmse
 
 def latin_sampler(locator, num_samples, variables):
     """
@@ -93,6 +95,39 @@ def latin_sampler(locator, num_samples, variables):
 
     return design, pdf_list
 
+def prep_NN_inputs(NN_input,NN_target,NN_delays):
+    #NN_input.to_csv('TEMP.csv', index=False, header=False, float_format='%.3f', decimal='.')
+    #file_path_temp = 'C:\CEAforArcGIS\cea\surrogate\Temp.csv'
+    #input1 = pd.read_csv(file_path_temp)
+    input1=np.array(NN_input)
+    target1=np.array(NN_target)
+    nS, nF = input1.shape
+    nSS, nT = target1.shape
+    nD=NN_delays
+    aD=nD+1
+    inputn=np.zeros((nS+nD, aD*nF))
+    rowsF, colsF=inputn.shape
+    input_matrix_targets=np.zeros((nS+nD, nD))
+
+    for i in range(1,aD):
+        j=i-1
+        aS=nS+j
+        m1=(i*nF)-(nF-1)
+        m2=(i*nF)+1
+        n1=(i*nT)-(nF-1)
+        n2=(i*nT)+1
+        print n1,n2
+        inputn[j:aS, m1:m2]=input1
+        input_matrix_targets[j:aS, n1:n2]=target1
+
+    print inputn, input_matrix_targets
+    trimmed_inputn = inputn[aD:nS - 1,:]
+    trimmed_inputt = input_matrix_targets[aD:nS - 1, :]
+    NN_input_ready=pd.concat([trimmed_inputn, trimmed_inputt], axis=1)
+    NN_target_ready=target1[aD:nS,:]
+
+    return NN_input_ready, NN_target_ready
+
 def sampling_main(locator, variables, building_name, building_load):
     """
     This script creates samples using a lating Hypercube sample of 5 variables of interest.
@@ -124,6 +159,8 @@ def sampling_main(locator, variables, building_name, building_load):
                'building_load':building_load, 'probabiltiy_vars':pdf_list}
     pickle.dump(problem, file(locator.get_calibration_problem(building_name), 'w'))
 
+    all_random_samples = []
+
     for i in range(number_samples):
 
         #create list of tubles with variables and sample
@@ -135,9 +172,36 @@ def sampling_main(locator, variables, building_name, building_load):
         # run cea demand and calculate cv_rmse
         #cv_rmse, rmse = simulate_demand_sample(locator, building_name, building_load)
         simulate_demand_sample(locator, building_name, building_load)
+        intended_parameters=['people','Eaf','Elf','Qwwf','I_rad','I_sol','T_ext','rh_ext',
+        'ta_hs_set','ta_cs_set','theta_a','Qhsf', 'Qcsf']
+        file_path='C:\Reference-case-open\Baseline\outputs\data\demand\B153731.xls'
+        calcs_outputs_xls = pd.read_excel(file_path)
+        calcs_outputs_xls.to_csv('out.csv', index=False, header=True, float_format='%.3f', decimal='.')
+        file_path2='C:\CEAforArcGIS\cea\surrogate\out.csv'
+        calcs_trimmed_csv=pd.read_csv(file_path2, usecols=intended_parameters)
+        calcs_trimmed_csv['I_real'] = calcs_trimmed_csv['I_rad'] + calcs_trimmed_csv['I_sol']
+        calcs_trimmed_csv['ta_hs_set'].fillna(0, inplace=True)
+        calcs_trimmed_csv['ta_cs_set'].fillna(50, inplace=True)
+        NN_input=calcs_trimmed_csv
+        input_drops = ['I_rad', 'I_sol', 'theta_a', 'Qhsf', 'Qcsf']
+        NN_input = NN_input.drop(input_drops, 1)
+        target1=calcs_trimmed_csv['Qhsf']
+        target2=calcs_trimmed_csv['Qcsf']
+        target3=calcs_trimmed_csv['theta_a']
+        NN_target_ht = pd.concat([target1, target3], axis=1)
+        NN_target_cl = pd.concat([target2, target3], axis=1)
+
+
+        #return NN_input, NN_target_ht, NN_target_cl
+
+        NN_delays=1
+        NN_input_ready, NN_target_ready=prep_NN_inputs(NN_input, NN_target_ht, NN_delays)
+        print NN_input_ready
+
         #cv_rmse_list.append(cv_rmse)
         #rmse_list.append(rmse)
         #print "The cv_rmse for this iteration is:", cv_rmse
+
 
     #json.dump({'cv_rmse':cv_rmse_list, 'rmse':rmse_list}, file(locator.get_calibration_cvrmse_file(building_name), 'w'))
 
