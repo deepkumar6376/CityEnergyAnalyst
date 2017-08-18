@@ -1,10 +1,134 @@
 name: cityenergyanalyst_docs
 channels:
+- omnia
+- pythonocc
+- dlr-sc
+- oce
 - conda-forge
+- defaults
 dependencies:
-- python=2.7
-- pandas
+- backports_abc
+- ca-certificates
+- certifi
+- click
+- click-plugins
+- cligj
+- curl
+- cycler
+- descartes
+- enum34
+- ephem
+- expat
+- fiona
+- freetype
+- freexl
+- functools32
 - geopandas
+- geos
+- hdf4
+- hdf5
+- icu
+- jpeg
+- kealib
+- krb5
+- libgdal
+- libiconv
+- libnetcdf
+- libpng
+- libpq
+- libspatialindex
+- libspatialite
+- libtiff
+- libxml2
 - matplotlib
-- sphinx
-- versioneer
+- munch
+- openjpeg
+- openssl
+- pandas
+- pbr
+- pip
+- proj4
+- psycopg2
+- pyparsing
+- pyproj
+- pyqt
+- pysal
+- pyscaffold
+- python
+- python-dateutil
+- pytz
+- qt
+- rtree
+- setuptools
+- setuptools_scm
+- shapely
+- singledispatch
+- sip
+- six
+- sqlalchemy
+- sqlite
+- ssl_match_hostname
+- tbb
+- tornado
+- wheel
+- xerces-c
+- xz
+- zlib
+- mkl
+- numpy
+- scikit-learn
+- scipy
+- freeimageplus
+- gl2ps
+- oce
+- cvxopt
+- pythonocc-core
+- smesh
+- pip:
+  - alabaster
+  - astral
+  - babel
+  - backports-abc
+  - backports.ssl-match-hostname
+  - chardet
+  - cloudpickle
+  - colorama
+  - configparser
+  - deap>
+  - decorator
+  - docutils
+  - doit==0.29.0
+  - idna
+  - imagesize
+  - ipython-genutils
+  - jinja2
+  - jsonschema
+  - jupyter-core
+  - lxml
+  - markupsafe
+  - nbformat
+  - networkx
+  - pkginfo
+  - plotly
+  - pycollada
+  - pygments
+  - pyliburo
+  - pymf
+  - pyshp
+  - requests
+  - requests-toolbelt
+  - salib
+  - setuptools-scm
+  - simpledbf
+  - snowballstemmer
+  - sphinx
+  - sphinxcontrib-websupport
+  - timezonefinder
+  - tqdm
+  - traitlets
+  - twine
+  - typing
+  - urllib3
+  - xlrd
+  - xlwt
+

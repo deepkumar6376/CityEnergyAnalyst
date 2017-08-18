@@ -27,9 +27,9 @@ def calc_Qww_ls_st(ta, te, Tww_st, V, Qww, Qww_ls_r, Qww_ls_nr, gv):
     :param ta: room temperature in [C]
     :param te: ambient temperature in [C]
     :param V: DHW tank size in [m3]
-    :param Qww: DHW demand in [W]
-    :param Qww_ls_r: recoverable loss in distribution in [W]
-    :param Qww_ls_nr: non-recoverable loss in distribution in [W]
+    :param Qww: DHW demand in [Wh]
+    :param Qww_ls_r: recoverable loss in distribution in [Wh]
+    :param Qww_ls_nr: non-recoverable loss in distribution in [Wh]
     :param gv: globalvar.py
 
     :type Tww_st: float
@@ -41,25 +41,28 @@ def calc_Qww_ls_st(ta, te, Tww_st, V, Qww, Qww_ls_r, Qww_ls_nr, gv):
     :type Qww_ls_nr: float
 
 
-    :return ql: storage sensible heat loss in [W].
-    :return qd: heat discharged from the tank in [W], including dhw heating demand and distribution heat loss.
-    :return qc: heat charged into the tank in [W].
+    :return ql: storage sensible heat loss in [Wh].
+    :return qd: heat discharged from the tank in [Wh], including dhw heating demand and distribution heat loss.
+    :return qc: heat charged into the tank in [Wh].
     :rtype ql: float
     :rtype qd: float
     :rtype qc: float
     """
 
     tamb = ta - gv.Bf * (ta - te)         # Calculate tamb in basement according to EN
-
-    h = ( 4 * V * gv.AR ** 2 / math.pi ) ** ( 1.0 / 3.0 )     # tank height in [m], derived from tank Aspect Ratio(AR)
-    r = ( V / ( math.pi * h ) ) ** ( 1.0 / 2.0 )         # tank radius in [m], assuming tank shape is cylinder
-    Atank = 2 * math.pi * r ** 2 + 2 * math.pi * r * h      # tank surface area in [m2].
-    ql = gv.U_dhwtank * Atank * ( Tww_st - tamb )       # tank heat loss to the room in [W]
+    if V > 0:
+        h = ( 4 * V * gv.AR ** 2 / math.pi ) ** ( 1.0 / 3.0 )     # tank height in [m], derived from tank Aspect Ratio(AR)
+        r = ( V / ( math.pi * h ) ) ** ( 1.0 / 2.0 )         # tank radius in [m], assuming tank shape is cylinder
+        Atank = 2 * math.pi * r ** 2 + 2 * math.pi * r * h      # tank surface area in [m2].
+    else:
+        Atank = 0
+    ql = gv.U_dhwtank * Atank * ( Tww_st - tamb )       # tank heat loss to the room in [Wh]
     qd = Qww + Qww_ls_r + Qww_ls_nr
     if Qww <= 0:
         qc = 0
     else:
         qc = qd + ql + gv.Pwater * V * gv.Cpw * ( gv.Tww_setpoint - Tww_st ) / 3.6
+
     return ql, qd, qc
 
 
@@ -69,15 +72,17 @@ def ode(y, t, ql, qd, qc, Pwater, Cpw, Vtank):
 
     :param y: storage sensible temperature in K.
     :param t: time steps.
-    :param ql: storage tank sensible heat loss in W.
-    :param qd: heat discharged from the tank in W.
-    :param qc: heat charged into the tank in W.
+    :param ql: storage tank sensible heat loss in Wh.
+    :param qd: heat discharged from the tank in Wh.
+    :param qc: heat charged into the tank in Wh.
+    :param Vtank: DHW tank size in [m3]
     :type y: float
     :type t: float
     :type ql: float
     :type qd: float
     :type qc: float
-    
+    :type Vtank: float
+
     :return dydt: change in temperature at each time step.
     :type dydt: float
     """
@@ -89,9 +94,9 @@ def solve_ode_storage(Tww_st_0, ql, qd, qc, Vtank, gv):
     This algorithm solves the differential equation, ode.
 
     :param Tww_st_0: initial tank temperature in [C]
-    :param ql: storage tank sensible heat loss in W.
-    :param qd: heat discharged from the tank in W.
-    :param qc: heat charged into the tank in W.
+    :param ql: storage tank sensible heat loss in Wh.
+    :param qd: heat discharged from the tank in Wh.
+    :param qc: heat charged into the tank in Wh.
     :param Vtank: DHW tank size in [m3]
     :param gv: globalvar.py
 

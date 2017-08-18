@@ -97,7 +97,8 @@ def get_properties_natural_ventilation(bpr, gv):
     height_zone,\
     slope_roof = get_building_geometry_ventilation(bpr.geometry)
     class_shielding = gv.shielding_class
-    factor_cros = bpr.architecture.f_cros
+#    factor_cros = bpr.architecture.f_cros
+    factor_cros = 0  # TODO write dict function to look up, ZERO is for office and industrial functions
     area_vent_zone = 0  # (cm2) area of ventilation openings # TODO: get from buildings properties
 
     # calculate properties that remain constant in the minimization
@@ -818,7 +819,7 @@ def testing():
     surface_properties = pd.read_csv(locator.get_surface_properties())
     gdf_building_architecture = geopandas.GeoDataFrame.from_file(
         locator.get_building_architecture()).drop('geometry', axis=1).set_index('Name')
-    prop_geometry = geopandas.GeoDataFrame.from_file(locator.get_building_geometry())
+    prop_geometry = geopandas.GeoDataFrame.from_file(locator.get_zone_geometry())
     prop_geometry['footprint'] = prop_geometry.area
     prop_geometry['perimeter'] = prop_geometry.length
     prop_geometry = prop_geometry.drop('geometry', axis=1).set_index('Name')

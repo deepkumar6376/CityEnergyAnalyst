@@ -49,7 +49,7 @@ def moo_optimization(locator, weather_file, gv):
     extra_costs, extra_CO2, extra_primary_energy, solarFeat = preproccessing(locator, total_demand, building_names,
                                                                    weather_file, gv)
 
-    # optimize the distribution and linearalize the results (at the moment, there is only a linearilization of values in Zug)
+    # optimize the distribution and linearize the results(at the moment, there is only a linearization of values in Zug)
     print "NETWORK OPTIMIZATION"
     network_features = network_opt.network_opt_main()
 
@@ -81,5 +81,5 @@ def run_as_script(scenario_path=None):
     print 'test_optimization_main() succeeded'
 
 if __name__ == '__main__':
-    run_as_script(r'C:\reference-case-zug\baseline')
+    run_as_script()
 
