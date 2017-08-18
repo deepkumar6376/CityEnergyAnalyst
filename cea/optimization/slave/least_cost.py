@@ -767,20 +767,6 @@ def least_cost_main(locator, master_to_slave_vars, solar_features, gv):
     print "E_oil_eq_MJ", E_oil_eq_MJ, np.shape(E_oil_eq_MJ)
     print "CO2_kg_eq", CO2_kg_eq, np.shape(CO2_kg_eq)
 
-    if save_file == 1:
-        results = pd.DataFrame({"E_oil_eq_MJ": [E_oil_eq_MJ], "CO2_kg_eq": [CO2_kg_eq], "cost_sum": [cost_sum]})
-        results.to_csv(locator.get_optimization_slave_slave_to_master_cost_emissions_prim_e(MS_Var.configKey), sep=',')
-        print "Slave to Master Variables saved in : ", locator.get_optimization_slave_results_folder()
-        print " as : ", MS_Var.configKey + "_SlaveToMasterCostEmissionsPrimE.csv"
-    printcost = 0
-    if printcost == 1:
-        print "Total_Cost_HPSew", np.sum(cost_data_centralPlant_op[:, 0])
-        print "Total_Cost_HPLake", np.sum(cost_data_centralPlant_op[:, 1])
-        print "Total_Cost_GHP", np.sum(cost_data_centralPlant_op[:, 2])
-        print "Total_Cost_CC", np.sum(cost_data_centralPlant_op[:, 3])
-        print "Total_Cost_Furnace", np.sum(cost_data_centralPlant_op[:, 4])
-        print "Total_Cost_BoilerBase", np.sum(cost_data_centralPlant_op[:, 5])
-        print "Total_Cost_BoilerPeak", np.sum(cost_data_centralPlant_op[:, 6])
 
 
 
@@ -1069,25 +1055,25 @@ def calc_primary_energy_and_CO2(Q_source_data, Q_coldsource_data, E_PP_el_data,
     
     CO2_from_HPSolarandHearRecovery = E_HP_SolarAndHeatRecoverySum * EL_TO_CO2 * gv.Wh_to_J / 1E6
     CO2_from_HP_StorageOperationChDeCh = E_aux_storage_operation_sum * EL_TO_CO2 * gv.Wh_to_J / 1E6
-    
-    # save data
-    results = pd.DataFrame({
-                            "CO2_from_Sewage":[CO2_from_Sewage],
-                            "CO2_from_GHP":[CO2_from_GHP],
-                            "CO2_from_HPLake":[CO2_from_HPLake],
-                            "CO2_from_CC_gas":[CO2_from_CC_gas],
-                            "CO2_from_BaseBoiler_gas":[CO2_from_BaseBoiler_gas],
-                            "CO2_from_PeakBoiler_gas":[CO2_from_PeakBoiler_gas],
-                            "CO2_from_AddBoiler_gas":[CO2_from_AddBoiler_gas],
-                            "CO2_from_fictiveBoilerStorage":[CO2_from_fictiveBoilerStorage],
-                            "CO2_from_wood":[CO2_from_wood],
-                            "CO2_from_elec_sold":[CO2_from_elec_sold],
-                            "CO2_from_SCandPVT":[CO2_from_SCandPVT],
-                            "CO2_from_elec_usedAuxBoilersAll":[CO2_from_elec_usedAuxBoilersAll],
-                            "CO2_from_HPSolarandHearRecovery":[CO2_from_HPSolarandHearRecovery],
-                            "CO2_from_HP_StorageOperationChDeCh":[CO2_from_HP_StorageOperationChDeCh]
-                            })
-    # results.to_csv(locator.get_optimization_slave_slave_detailed_emission_data(MS_Var.configKey), sep=',')
+    #
+    # # save data
+    # results = pd.DataFrame({
+    #                         "CO2_from_Sewage":[CO2_from_Sewage],
+    #                         "CO2_from_GHP":[CO2_from_GHP],
+    #                         "CO2_from_HPLake":[CO2_from_HPLake],
+    #                         "CO2_from_CC_gas":[CO2_from_CC_gas],
+    #                         "CO2_from_BaseBoiler_gas":[CO2_from_BaseBoiler_gas],
+    #                         "CO2_from_PeakBoiler_gas":[CO2_from_PeakBoiler_gas],
+    #                         "CO2_from_AddBoiler_gas":[CO2_from_AddBoiler_gas],
+    #                         "CO2_from_fictiveBoilerStorage":[CO2_from_fictiveBoilerStorage],
+    #                         "CO2_from_wood":[CO2_from_wood],
+    #                         "CO2_from_elec_sold":[CO2_from_elec_sold],
+    #                         "CO2_from_SCandPVT":[CO2_from_SCandPVT],
+    #                         "CO2_from_elec_usedAuxBoilersAll":[CO2_from_elec_usedAuxBoilersAll],
+    #                         "CO2_from_HPSolarandHearRecovery":[CO2_from_HPSolarandHearRecovery],
+    #                         "CO2_from_HP_StorageOperationChDeCh":[CO2_from_HP_StorageOperationChDeCh]
+    #                         })
+    # # results.to_csv(locator.get_optimization_slave_slave_detailed_emission_data(MS_Var.configKey), sep=',')
 
     #CO2_from_AuxElectricity= (E_aux_AddBoilerSum + E_el_Backup + E_el_BoilerBase) * Electricity_to_CO2 # Not used as the conversion factors
     #                                                                                           of the machinery takes into account final energy
@@ -1144,25 +1130,25 @@ def calc_primary_energy_and_CO2(Q_source_data, Q_coldsource_data, E_PP_el_data,
     Eprim_from_HP_StorageOperationChDeCh = E_aux_storage_operation_sum * EL_TO_CO2 * gv.Wh_to_J / 1E6
 
          
-    # Save data
-    results = pd.DataFrame({
-                            "Eprim_from_Sewage":[Eprim_from_Sewage],
-                            "Eprim_from_GHP":[Eprim_from_GHP],
-                            "Eprim_from_HPLake":[Eprim_from_HPLake],
-                            "E_prim_from_CC_gas":[E_prim_from_CC_gas],
-                            "E_prim_from_BaseBoiler_gas":[E_prim_from_BaseBoiler_gas],
-                            "E_prim_from_PeakBoiler_gas":[E_prim_from_PeakBoiler_gas],
-                            "E_prim_from_AddBoiler_gas":[E_prim_from_AddBoiler_gas],
-                            "E_prim_from_FictiveBoiler_gas":[E_prim_from_FictiveBoiler_gas],
-                            "Eprim_from_wood":[Eprim_from_wood],
-                            "EprimSaved_from_elec_sold_Furnace":[EprimSaved_from_elec_sold_Furnace],
-                            "EprimSaved_from_elec_sold_CC":[EprimSaved_from_elec_sold_CHP],
-                            "EprimSaved_from_elec_sold_Solar":[EprimSaved_from_elec_sold_Solar],
-                            "Eprim_from_elec_usedAuxBoilersAll":[Eprim_from_elec_usedAuxBoilersAll],
-                            "Eprim_from_HPSolarandHearRecovery":[Eprim_from_HPSolarandHearRecovery],
-                            "Eprim_from_HP_StorageOperationChDeCh":[Eprim_from_HP_StorageOperationChDeCh]
-                            })
-    # results.to_csv(locator.get_optimization_slave_slave_detailed_e_prim_data(MS_Var.configKey), sep=',')
+    # # Save data
+    # results = pd.DataFrame({
+    #                         "Eprim_from_Sewage":[Eprim_from_Sewage],
+    #                         "Eprim_from_GHP":[Eprim_from_GHP],
+    #                         "Eprim_from_HPLake":[Eprim_from_HPLake],
+    #                         "E_prim_from_CC_gas":[E_prim_from_CC_gas],
+    #                         "E_prim_from_BaseBoiler_gas":[E_prim_from_BaseBoiler_gas],
+    #                         "E_prim_from_PeakBoiler_gas":[E_prim_from_PeakBoiler_gas],
+    #                         "E_prim_from_AddBoiler_gas":[E_prim_from_AddBoiler_gas],
+    #                         "E_prim_from_FictiveBoiler_gas":[E_prim_from_FictiveBoiler_gas],
+    #                         "Eprim_from_wood":[Eprim_from_wood],
+    #                         "EprimSaved_from_elec_sold_Furnace":[EprimSaved_from_elec_sold_Furnace],
+    #                         "EprimSaved_from_elec_sold_CC":[EprimSaved_from_elec_sold_CHP],
+    #                         "EprimSaved_from_elec_sold_Solar":[EprimSaved_from_elec_sold_Solar],
+    #                         "Eprim_from_elec_usedAuxBoilersAll":[Eprim_from_elec_usedAuxBoilersAll],
+    #                         "Eprim_from_HPSolarandHearRecovery":[Eprim_from_HPSolarandHearRecovery],
+    #                         "Eprim_from_HP_StorageOperationChDeCh":[Eprim_from_HP_StorageOperationChDeCh]
+    #                         })
+    # # results.to_csv(locator.get_optimization_slave_slave_detailed_e_prim_data(MS_Var.configKey), sep=',')
 
     ######### Summed up results    
     CO2_emitted     = (CO2_from_HP + CO2_from_gas + CO2_from_wood + CO2_from_elec_sold + CO2_from_SCandPVT + CO2_from_elec_usedAuxBoilersAll\
