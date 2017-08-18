@@ -1,13 +1,11 @@
 from __future__ import division
 import pandas as pd
-from scipy.stats import triang
-from scipy.stats import norm
-from scipy.stats import uniform
-from pyDOE import lhs
 import cea
 import numpy as np
 from cea.demand import demand_main
+from cea.demand.calibration import latin_sampler
 from geopandas import GeoDataFrame as Gdf
+
 import pickle
 import json
 
@@ -23,7 +21,7 @@ __maintainer__ = "Daren Thomas"
 __email__ = "cea@arch.ethz.ch"
 __status__ = "Production"
 
-def simulate_demand_sample(locator, building_name, output_parameters):
+def simulate_demand_sample(locator, building_name, full_report_boolean=False):
     """
     This script runs the cea demand tool in series and returns a single value of cvrmse and rmse.
 
@@ -38,17 +36,16 @@ def simulate_demand_sample(locator, building_name, output_parameters):
     gv.multiprocessing = False
     gv.print_totals = False
     gv.simulate_building_list = [building_name]
+    gv.testing = full_report_boolean
 
     #import weather and measured data
     weather_path = locator.get_default_weather()
-    time_series_measured = pd.read_csv(locator.get_demand_measured_file(building_name), usecols=[output_parameters])
 
-    #calculate demand timeseries for buidling an calculate cvrms
+    #calculate demand timeseries for buidling
     demand_main.demand_calculation(locator, weather_path, gv)
-    time_series_simulation = pd.read_csv(locator.get_demand_results_file(building_name), usecols=[output_parameters])
-    cv_rmse, rmse = calc_cv_rmse(time_series_simulation[output_parameters].values, time_series_measured[output_parameters].values)
 
-    return cv_rmse, rmse
+    return
+
 
 def calc_cv_rmse(prediction, target):
     """
@@ -74,49 +71,6 @@ def calc_cv_rmse(prediction, target):
     return round(CVrmse,3), round(rmse,3) #keep only 3 significant digits
 
 
-def latin_sampler(locator, num_samples, variables):
-    """
-    This script creates a matrix of m x n samples using the latin hypercube sampler.
-    for this, it uses the database of probability distribtutions stored in locator.get_uncertainty_db()
-
-    :param locator: pointer to locator of files of CEA
-    :param num_samples: number of samples to do
-    :param variables: list of variables to sample
-    :return:
-        1. design: a matrix m x n with the samples
-        2. pdf_list: a dataframe with properties of the probability density functions used in the excercise.
-    """
-
-
-    # get probability density function PDF of variables of interest
-    variable_groups = ('ENVELOPE', 'INDOOR_COMFORT', 'INTERNAL_LOADS')
-    database = pd.concat([pd.read_excel(locator.get_uncertainty_db(), group, axis=1)
-                                                for group in variable_groups])
-    pdf_list = database[database['name'].isin(variables)].set_index('name')
-
-    # get number of variables
-    num_vars = pdf_list.shape[0] #alternatively use len(variables)
-
-    # get design of experiments
-    design = lhs(num_vars, samples=num_samples)
-    for i, variable in enumerate(variables):
-        distribution = pdf_list.loc[variable, 'distribution']
-        min = pdf_list.loc[variable,'min']
-        max = pdf_list.loc[variable,'max']
-        mu = pdf_list.loc[variable,'mu']
-        stdv = pdf_list.loc[variable,'stdv']
-        if distribution == 'triangular':
-            loc = min
-            scale = max - min
-            c = (mu - min) / (max - min)
-            design[:, i] = triang(loc=loc, c=c, scale=scale).ppf(design[:, i])
-        elif distribution == 'normal':
-            design[:, i] = norm(loc=mu, scale=stdv).ppf(design[:, i])
-        else: # assume it is uniform
-            design[:, i] = uniform(loc=min, scale=max).ppf(design[:, i])
-
-    return design, pdf_list
-
 def sampling_main(locator, variables, building_name, building_load):
     """
     This script creates samples using a lating Hypercube sample of 5 variables of interest.
@@ -140,7 +94,7 @@ def sampling_main(locator, variables, building_name, building_load):
     """
 
     # create list of samples with a LHC sampler and save to disk
-    samples, pdf_list = latin_sampler(locator, number_samples, variables)
+    samples, pdf_list = latin_sampler.latin_sampler(locator, number_samples, variables)
     np.save(locator.get_calibration_samples(building_name), samples)
 
     # create problem and save to disk as json
@@ -159,7 +113,15 @@ def sampling_main(locator, variables, building_name, building_load):
         apply_sample_parameters(locator, sample)
 
         # run cea demand and calculate cv_rmse
-        cv_rmse, rmse = simulate_demand_sample(locator, building_name, building_load)
+        simulate_demand_sample(locator, building_name)
+
+        #calculate cv_rmse
+        time_series_simulation = pd.read_csv(locator.get_demand_results_file(building_name),
+                                             usecols=[building_load])
+        time_series_measured = pd.read_csv(locator.get_demand_measured_file(building_name), usecols=[building_load])
+        cv_rmse, rmse = calc_cv_rmse(time_series_simulation[building_load].values,
+                                     time_series_measured[building_load].values)
+
         cv_rmse_list.append(cv_rmse)
         rmse_list.append(rmse)
         print "The cv_rmse for this iteration is:", cv_rmse
