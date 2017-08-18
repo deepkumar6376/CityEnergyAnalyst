@@ -114,9 +114,10 @@ def prep_NN_inputs(NN_input,NN_target,NN_delays):
         aS=nS+j
         m1=(i*nF)-(nF-1)
         m2=(i*nF)+1
-        n1=(i*nT)-(nF-1)
+        n1=(i*nT)-(nT-1)
         n2=(i*nT)+1
         print n1,n2
+        print target1
         inputn[j:aS, m1:m2]=input1
         input_matrix_targets[j:aS, n1:n2]=target1
 
