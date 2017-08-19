@@ -5,20 +5,14 @@ Evolutionary algorithm main
 
 """
 from __future__ import division
-
-import os
 import time
-from pickle import Pickler, Unpickler
-import csv
 import json
-
 import cea.optimization.master.crossover as cx
 import cea.optimization.master.evaluation as evaluation
 from deap import base
 from deap import creator
 from deap import tools
 import multiprocessing
-
 import cea.optimization.master.generation as generation
 import mutations as mut
 import selection as sel
@@ -31,6 +25,8 @@ __version__ = "0.1"
 __maintainer__ = "Daren Thomas"
 __email__ = "thomas@arch.ethz.ch"
 __status__ = "Production"
+
+
 
 
 def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extra_primary_energy, solar_features,
@@ -76,7 +72,8 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
 
     # DEFINE OBJECTIVE FUNCTION
     def objective_function(ind):
-        (costs, CO2, prim) = evaluation.evaluation_main(ind, building_names, locator, extra_costs, extra_CO2, extra_primary_energy, solar_features,
+        (costs, CO2, prim) = evaluation.evaluation_main(ind, building_names, locator, extra_costs, extra_CO2,
+                                                        extra_primary_energy, solar_features,
                                                         network_features, gv)
         return (costs, CO2, prim)
 
@@ -90,6 +87,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     toolbox.register("evaluate", objective_function)
     pool = multiprocessing.Pool()
+    toolbox.register("map", pool.map)
     joblist = []
 
     ntwList = ["1"*nBuildings]
@@ -107,23 +105,8 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
 
         # Evaluate the initial population
         print "Evaluate initial population"
-        fitnesses = map(toolbox.evaluate, pop)
+        fitnesses = toolbox.map(toolbox.evaluate, pop)
         print (fitnesses)
-
-        pool = multiprocessing.Pool()
-        for ind in pop:
-            result = pool.apply_async(objective_function, ind)
-            joblist.append(result)
-        print (joblist)
-
-        print (pool.map(objective_function, pop))
-        # pool.close()
-
-
-
-        for ind, fit in zip(pop, result):
-            ind.fitness.values = fit
-            print ind.fitness.values, "fit"
 
         # Save initial population
         print "Save Initial population \n"
@@ -132,15 +115,6 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
             cp = dict(population=pop, generation=0, networkList=ntwList, epsIndicator=[], testedPop=[], population_fitness=fitnesses)
             json.dump(cp, fp)
 
-    else:
-        print "Recover from CP " + str(genCP) + "\n"
-
-        with open(locator.get_optimization_checkpoint(genCP), "rb") as CPread:
-            CPunpick = Unpickler(CPread)
-            cp = CPunpick.load()
-            pop = cp["population"]
-            ntwList = cp["networkList"]
-            epsInd = cp["epsIndicator"]
 
     PROBA, SIGMAP = gv.PROBA, gv.SIGMAP
 
