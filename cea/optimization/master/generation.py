@@ -8,6 +8,8 @@ from __future__ import division
 import random
 from numpy.random import random_sample
 from itertools import izip
+import cea.optimization.optimization_settings
+
 
 __author__ =  "Thuy-An Nguyen"
 __copyright__ = "Copyright 2015, Architecture and Building Systems - ETH Zurich"
@@ -18,7 +20,7 @@ __maintainer__ = "Daren Thomas"
 __email__ = "thomas@arch.ethz.ch"
 __status__ = "Production"
 
-def generate_main(lower_bound, upper_bound):
+def generate_main():
     """
     Creates an individual configuration for the evolutionary algorithm based on the lower and upper bounds
 
@@ -31,47 +33,30 @@ def generate_main(lower_bound, upper_bound):
     """
 
     # randomly generate individual betweeen the lower and upper bounds
+    settings = cea.optimization.optimization_settings.optimization_settings()
 
     individual = []
+    lower_bound = settings.lower_bound
+    upper_bound = settings.upper_bound
+    continuous_variables = settings.lower_bound_conversion_technologies_shares + settings.lower_bound_solar_technologies_shares
     size = len(lower_bound)
 
     for i in range(size):
-        individual[i] = (upper_bound[i] - lower_bound[i]) * random.random() + lower_bound[i]
+        print (i)
+        individual.append((upper_bound[i] - lower_bound[i]) * random.random() + lower_bound[i])
 
+    for i in range(size):
+        if i < size - len(continuous_variables):
+            individual[i] = int(round(individual[i]))
+    print individual
+    print len(continuous_variables)
     return individual
 
 
-    
-    # Allocation of Shares
-    def cuts(ind, nPlants, irank):
-        cuts = sorted(random_sample(nPlants - 1) * 0.99 + 0.009)    
-        edge = [0] + cuts + [1]
-        share = [(b - a) for a, b in izip(edge, edge[1:])]
-        
-        n = len(share)
-        sharetoallocate = 0
-        rank = irank
-        while sharetoallocate < n:
-            if ind[rank] > 0:
-                ind[rank+1] = share[sharetoallocate]
-                sharetoallocate += 1
-            rank += 2
-    
-    cuts(individual, countDHN, 0)
-
-    if countSolar > 0:
-        cuts(individual, countSolar, gv.nHeat * 2 + gv.nHR)
-
-    # Connection of the buildings
-    for building in range(nBuildings):
-        choice_buildCon = random.randint(0,1)
-        individual[index] = choice_buildCon
-        index += 1
-
-    
-    return individual
 
 
+if __name__ == '__main__':
+    generate_main()
 
 
 

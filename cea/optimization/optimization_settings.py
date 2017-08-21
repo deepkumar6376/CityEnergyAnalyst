@@ -68,8 +68,8 @@ class optimization_settings(object):
 
         self.lower_bound_conversion_technologies_shares = [0] * (self.nHeat)  # continuous variables
         self.upper_bound_conversion_technologies_shares = [1] * (self.nHeat)  # continuous variables
-        self.lower_bound_solar_technologies_shares = [0] * (self.nSolar)  # continuous variables
-        self.upper_bound_solar_technologies_shares = [1] * (self.nSolar)  # continuous variables
+        self.lower_bound_solar_technologies_shares = [0] * (self.nSolar + 1)  # continuous variables
+        self.upper_bound_solar_technologies_shares = [1] * (self.nSolar + 1)  # continuous variables
 
         self.lower_bound = self.lower_bound_conversion_technologies_activation + self.lower_bound_heat_recovery + \
                            self.lower_bound_solar_technologies_activation + self.lower_bound_buildings +\
