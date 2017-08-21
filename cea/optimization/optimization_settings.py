@@ -57,5 +57,25 @@ class optimization_settings(object):
 
         #  BOunds for optimization
         self.nBuildings = 24
-        self.lower_bound = [0] * ((self.nHeat + self.nSolar) * 2 + self.nHR + self.nBuildings + 1)
-        self.upper_bound = [4, 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        self.lower_bound_conversion_technologies_activation = [0] * (self.nHeat)  # discrete variables
+        self.upper_bound_conversion_technologies_activation = [4, 2, 2, 1, 1, 1]  # discrete variables
+        self.lower_bound_heat_recovery = [0] * (self.nHR)  # only ON or OFF, discrete variables
+        self.upper_bound_heat_recovery = [1] * (self.nHR)  # discrete variables
+        self.lower_bound_solar_technologies_activation = [0] * (self.nSolar)  # discrete variables
+        self.upper_bound_solar_technologies_activation = [1] * (self.nSolar)  # discrete variables
+        self.lower_bound_buildings = [0] * (self.nBuildings)  # discrete variables
+        self.upper_bound_buildings = [1] * (self.nBuildings)  # discrete variables
+
+        self.lower_bound_conversion_technologies_shares = [0] * (self.nHeat)  # continuous variables
+        self.upper_bound_conversion_technologies_shares = [1] * (self.nHeat)  # continuous variables
+        self.lower_bound_solar_technologies_shares = [0] * (self.nSolar)  # continuous variables
+        self.upper_bound_solar_technologies_shares = [1] * (self.nSolar)  # continuous variables
+
+        self.lower_bound = self.lower_bound_conversion_technologies_activation + self.lower_bound_heat_recovery + \
+                           self.lower_bound_solar_technologies_activation + self.lower_bound_buildings +\
+                           self.lower_bound_conversion_technologies_shares + self.lower_bound_solar_technologies_shares
+
+        self.upper_bound = self.upper_bound_conversion_technologies_activation + self.upper_bound_heat_recovery + \
+                           self.upper_bound_solar_technologies_activation + self.upper_bound_buildings +\
+                           self.upper_bound_conversion_technologies_shares + self.upper_bound_solar_technologies_shares
+

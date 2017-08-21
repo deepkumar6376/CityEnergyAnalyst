@@ -72,6 +72,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     """
     t0 = time.clock()
     settings = cea.optimization.optimization_settings.optimization_settings()
+    pop = []
 
     # get number of buildings
     nBuildings = len(building_names)
@@ -84,6 +85,15 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
 
     # SET-UP EVOLUTIONARY ALGORITHM
     # Contains 3 minimization objectives : Costs, CO2 emissions, Primary Energy Needs
+    for i in range(settings.initialInd):
+        pop[i] = generation.generate_main(settings.lower_bound, settings.upper_bound)
+
+
+
+
+
+
+
     creator.create("Fitness", base.Fitness, weights=(-1.0, -1.0, -1.0))
     creator.create("Individual", list, fitness=creator.Fitness)
     toolbox = base.Toolbox()
@@ -167,19 +177,6 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
                 # offspring.append(mut.mutShuffle(mutant, PROBA, gv))
                 print "Mutation GU \n"
                 offspring.append(mut.mutGU(mutant, PROBA, gv))
-
-        # # Third quarter of the master: keep the good individuals but modify the shares uniformly
-        # elif g < gv.NGEN * 3/4:
-        #     for mutant in pop:
-        #         print "Mutation Uniform"
-        #         offspring.append(mut.mutUniformCap(mutant, gv))
-        # 
-        # # Last quarter: keep the very good individuals and modify the shares with Gauss distribution
-        # else:
-        #     for mutant in pop:
-        #         print "Mutation Gauss"
-        #         offspring.append(mut.mutGaussCap(mutant, SIGMAP, gv))
-
 
         # Evaluate the individuals with an invalid fitness
         # NB: every generation leads to the reevaluation of (n/2) / (n/4) / (n/4) individuals
