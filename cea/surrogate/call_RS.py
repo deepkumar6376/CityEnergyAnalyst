@@ -99,32 +99,32 @@ def prep_NN_inputs(NN_input,NN_target,NN_delays):
     #NN_input.to_csv('TEMP.csv', index=False, header=False, float_format='%.3f', decimal='.')
     #file_path_temp = 'C:\CEAforArcGIS\cea\surrogate\Temp.csv'
     #input1 = pd.read_csv(file_path_temp)
-    input1=np.array(NN_input)
-    target1=np.array(NN_target)
+    input1=NN_input
+    target1=NN_target
     nS, nF = input1.shape
     nSS, nT = target1.shape
     nD=NN_delays
     aD=nD+1
     input_matrix_features=np.zeros((nS+nD, aD*nF))
     rowsF, colsF=input_matrix_features.shape
-    input_matrix_targets=np.zeros((nS+nD, nD))
+    input_matrix_targets=np.zeros((nS+nD, aD*nT))
+    rowsFF, ColsFF = input_matrix_targets.shape
 
-    for i in range(1,aD):
+    i=1
+    while i<aD+1:
         j=i-1
         aS=nS+j
-        m1=(i*nF)-(nF-1)
-        m2=(i*nF)+1
-        n1=(i*nT)-(nT-1)
-        n2=(i*nT)+1
-        print n1,n2
-        print target1
+        m1=(i*nF)-(nF)
+        m2=(i*nF)
+        n1=(i*nT)-(nT)
+        n2=(i*nT)
         input_matrix_features[j:aS, m1:m2]=input1
         input_matrix_targets[j:aS, n1:n2]=target1
+        i=i+1
 
-    print input_matrix_features, input_matrix_targets
-    trimmed_inputn = input_matrix_features[aD:nS - 1,:]
-    trimmed_inputt = input_matrix_targets[aD:nS - 1, :]
-    NN_input_ready=pd.concat([trimmed_inputn, trimmed_inputt], axis=1)
+    trimmed_inputn = input_matrix_features[aD:nS,:]
+    trimmed_inputt = input_matrix_targets[aD:nS, 2:]
+    NN_input_ready=np.concatenate([trimmed_inputn, trimmed_inputt], axis=1)
     NN_target_ready=target1[aD:nS,:]
 
     return NN_input_ready, NN_target_ready
@@ -160,7 +160,14 @@ def sampling_main(locator, variables, building_name, building_load):
                'building_load':building_load, 'probabiltiy_vars':pdf_list}
     pickle.dump(problem, file(locator.get_calibration_problem(building_name), 'w'))
 
-    all_random_samples = []
+    nn_X_ht = []
+    nn_X_cl = []
+    nn_T_ht = []
+    nn_T_cl = []
+    nn_X_ht = np.array(nn_X_ht)
+    nn_X_cl = np.array(nn_X_cl)
+    nn_T_ht = np.array(nn_T_ht)
+    nn_T_cl = np.array(nn_T_cl)
 
     for i in range(number_samples):
 
@@ -186,23 +193,68 @@ def sampling_main(locator, variables, building_name, building_load):
         NN_input=calcs_trimmed_csv
         input_drops = ['I_rad', 'I_sol', 'theta_a', 'Qhsf', 'Qcsf']
         NN_input = NN_input.drop(input_drops, 1)
+
+
+
+        NN_input=np.array(NN_input)
         target1=calcs_trimmed_csv['Qhsf']
         target2=calcs_trimmed_csv['Qcsf']
         target3=calcs_trimmed_csv['theta_a']
         NN_target_ht = pd.concat([target1, target3], axis=1)
         NN_target_cl = pd.concat([target2, target3], axis=1)
+        NN_target_ht=np.array(NN_target_ht)
+        NN_target_cl=np.array(NN_target_cl)
 
 
         #return NN_input, NN_target_ht, NN_target_cl
 
         NN_delays=1
-        NN_input_ready, NN_target_ready=prep_NN_inputs(NN_input, NN_target_ht, NN_delays)
-        print NN_input_ready
+        NN_input_ready_ht, NN_target_ready_ht=prep_NN_inputs(NN_input, NN_target_ht, NN_delays)
+        NN_input_ready_cl, NN_target_ready_cl = prep_NN_inputs(NN_input, NN_target_cl, NN_delays)
 
-        #cv_rmse_list.append(cv_rmse)
-        #rmse_list.append(rmse)
-        #print "The cv_rmse for this iteration is:", cv_rmse
+        one_array_override=np.array(pd.read_csv(locator.get_building_overrides(),skiprows=1,nrows=1))
+        one_array_override1=np.delete(one_array_override,0,1)
+        rows_override, cols_override=one_array_override1.shape
+        rows_NN_input, cols_NN_input=NN_input_ready_ht.shape
+        random_variables_matrix=[]
+        random_variables_matrix=np.array(random_variables_matrix)
+        vector_of_ones = np.ones((rows_NN_input, 1))
 
+
+        for k in range (0,cols_override):
+            random_variable_call=one_array_override1[0,k]
+            random_variable_col=np.multiply(random_variable_call,vector_of_ones)
+            if k<1:
+                random_variables_matrix=random_variable_col
+            else:
+                random_variables_matrix=np.append(random_variables_matrix,random_variable_col,axis=1)
+
+
+        combined_inputs_ht=np.concatenate((NN_input_ready_ht,random_variables_matrix),axis=1)
+        combined_inputs_cl=np.concatenate((NN_input_ready_cl, random_variables_matrix), axis=1)
+
+        if i<2:
+            nn_X_ht=combined_inputs_ht
+            nn_X_cl=combined_inputs_cl
+            nn_T_ht=NN_target_ready_ht
+            nn_T_cl=NN_target_ready_cl
+        else:
+            nn_X_ht = np.concatenate((nn_X_ht,combined_inputs_ht), axis=0)
+            nn_X_cl = np.concatenate((nn_X_cl,combined_inputs_cl), axis=0)
+            nn_T_ht = np.concatenate((nn_T_ht, NN_target_ready_ht), axis=0)
+            nn_T_cl = np.concatenate((nn_T_cl, NN_target_ready_cl), axis=0)
+
+        #return nn_X_ht, nn_X_cl
+
+    sampled_input_ht = pd.DataFrame(nn_X_ht)
+    sampled_input_cl = pd.DataFrame(nn_X_cl)
+    sampled_target_ht = pd.DataFrame(nn_T_ht)
+    sampled_target_cl = pd.DataFrame(nn_T_cl)
+
+    sampled_input_ht.to_csv('in_ht.csv', index=False, header=False, float_format='%.3f', decimal='.')
+    sampled_input_cl.to_csv('in_cl.csv', index=False, header=False, float_format='%.3f', decimal='.')
+    sampled_target_ht.to_csv('tar_ht.csv', index=False, header=False, float_format='%.3f', decimal='.')
+    sampled_target_cl.to_csv('tar_cl.csv', index=False, header=False, float_format='%.3f', decimal='.')
 
     #json.dump({'cv_rmse':cv_rmse_list, 'rmse':rmse_list}, file(locator.get_calibration_cvrmse_file(building_name), 'w'))
 
