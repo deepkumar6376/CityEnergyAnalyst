@@ -27,7 +27,7 @@ from cea.optimization import slave_data
 # ++++++++++++++++++++++++++++++++++++++
 
 def evaluation_main(individual, building_names, locator, extraCosts, extraCO2, extraPrim, solar_features,
-                    network_features, gv):
+                    network_features, gv, settings):
     """
     This function evaluates an individual
 
@@ -56,9 +56,6 @@ def evaluation_main(individual, building_names, locator, extraCosts, extraCO2, e
     :rtype: tuple
 
     """
-    # Check the consistency of the individual or create a new one
-    individual = check_invalid(individual, len(building_names), gv)
-
     # Initialize objective functions costs, CO2 and primary energy
     costs = extraCosts
     CO2 = extraCO2
@@ -68,7 +65,7 @@ def evaluation_main(individual, building_names, locator, extraCosts, extraCO2, e
     QUncoveredAnnual = 0
 
     # Create the string representation of the individual
-    individual_barcode = sFn.individual_to_barcode(individual, gv)
+    individual_barcode = sFn.individual_to_barcode(individual, gv, settings)
 
     if individual_barcode.count("0") == 0:
         network_file_name = "Network_summary_result_all.csv"
@@ -141,68 +138,6 @@ def evaluation_main(individual, building_names, locator, extraCosts, extraCO2, e
 #+++++++++++++++++++++++++++++++++++
 # Boundary conditions
 #+++++++++++++++++++++++++++++
-
-
-def check_invalid(individual, nBuildings, gv):
-    """
-    This function rejects individuals out of the bounds of the problem
-    It can also generate a new individual, to replace the rejected individual
-
-    :param individual: individual sent for checking
-    :param nBuildings: number of buildings
-    :param gv: global variables class
-    :type individual: list
-    :type nBuildings: int
-    :type gv: class
-    :return: new individual if necessary
-    :rtype: list
-    """
-    valid = True
-
-    for i in range(gv.nHeat):
-        if individual[2 * i] > 0 and individual[2 * i + 1] < 0.01:
-            print "Share too low : modified"
-            oldValue = individual[2 * i + 1]
-            shareGain = oldValue - 0.01
-            individual[2 * i + 1] = 0.01
-
-            for rank in range(gv.nHeat):
-                if individual[2 * rank] > 0 and i != rank:
-                    individual[2 * rank + 1] += individual[2 * rank + 1] / (1 - oldValue) * shareGain
-
-    frank = gv.nHeat * 2 + gv.nHR
-    for i in range(gv.nSolar):
-        if individual[frank + 2 * i + 1] < 0:
-            print individual[frank + 2 * i + 1], "Negative solar share ! Modified"
-            individual[frank + 2 * i + 1] = 0
-
-    sharePlants = 0
-    for i in range(gv.nHeat):
-        sharePlants += individual[2 * i + 1]
-    if abs(sharePlants - 1) > 1E-3:
-        print "Wrong plant share !", sharePlants
-        valid = False
-
-    shareSolar = 0
-    nSol = 0
-    for i in range(gv.nSolar):
-        nSol += individual[frank + 2 * i]
-        shareSolar += individual[frank + 2 * i + 1]
-    if nSol > 0 and abs(shareSolar - 1) > 1E-3:
-        print "Wrong solar share !", shareSolar
-        valid = False
-
-    if not valid:
-        print "Non valid individual ! Replace by new one. \n"
-        newInd = generation.generate_main(nBuildings, gv)
-
-        L = (gv.nHeat + gv.nSolar) * 2 + gv.nHR
-        for i in range(L):
-            individual[i] = newInd[i]
-
-    return individual
-
-
 def calc_master_to_slave_variables(individual, Qmax, locator, gv):
     """
     This function reads the list encoding a configuration and implements the corresponding

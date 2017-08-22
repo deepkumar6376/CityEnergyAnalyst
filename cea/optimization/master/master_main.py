@@ -80,7 +80,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     # DEFINE OBJECTIVE FUNCTION
     def objective_function(ind):
         (costs, CO2, prim) = evaluation.evaluation_main(ind, building_names, locator, extra_costs, extra_CO2, extra_primary_energy, solar_features,
-                                                        network_features, gv)
+                                                        network_features, gv, settings)
         return (costs, CO2, prim)
 
     # SET-UP EVOLUTIONARY ALGORITHM
@@ -89,7 +89,8 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     # generate valid individuals
     for i in range(settings.initialInd):
         pop.append(generation.generate_main())
-
+        
+    evaluation.checkNtw(ind, ntwList, locator, gv)
     print (pop)
 
     print (objective_function(pop[0]))

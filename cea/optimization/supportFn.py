@@ -70,7 +70,7 @@ def calcQmax(fName, filepath, gV):
     return Qmax
     
 
-def individual_to_barcode(individual, gV):
+def individual_to_barcode(individual, gV, settings):
     """
     Reads the 0-1 combination of connected/disconnected buildings
     and creates a list of strings type barcode i.e. ("12311111123012")
@@ -83,8 +83,8 @@ def individual_to_barcode(individual, gV):
     :return: indCombi: list of strings
     :rtype: list
     """
-    irank = (gV.nHeat + gV.nSolar) * 2 + gV.nHR + 1
-    frank = len(individual)
+    irank = settings.nHeat + settings.nSolar + settings.nHR
+    frank = len(individual) - settings.nHeat - settings.nSolar - 1
     indCombi = ""
     print irank, frank
     while irank < frank:
