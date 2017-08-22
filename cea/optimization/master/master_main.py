@@ -85,10 +85,15 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
 
     # SET-UP EVOLUTIONARY ALGORITHM
     # Contains 3 minimization objectives : Costs, CO2 emissions, Primary Energy Needs
+
+    # generate valid individuals
     for i in range(settings.initialInd):
         pop.append(generation.generate_main())
 
     print (pop)
+
+    print (objective_function(pop[0]))
+
 
 
 

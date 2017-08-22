@@ -70,6 +70,48 @@ def generate_main():
         for i in range(len(settings.lower_bound_solar_technologies_shares) - 1):
             individual[individual_size - len(continuous_variables) + 1 + (len(settings.lower_bound_conversion_technologies_shares) - 1) + i] = solar_technologies_share_random_generation[0][i]
 
+    individual = check_valid(individual, settings)
+
+    return individual
+
+def check_valid(individual, settings):
+    """
+    The function ensures the individual is valid. If a component of the individual is invalid, it is replaced.
+    :param individual:
+    :return:
+    """
+    updated_individual = []
+    conversion_activation = individual[0:len(settings.lower_bound_conversion_technologies_activation)]
+    discrete_variables = len(settings.lower_bound_conversion_technologies_activation) +\
+                         len(settings.lower_bound_heat_recovery) +\
+                         len(settings.lower_bound_solar_technologies_activation) +\
+                         settings.nBuildings
+    conversion_shares = individual[discrete_variables : discrete_variables + len(settings.lower_bound_conversion_technologies_shares)]
+
+    for i in range(len(conversion_activation)):
+        if conversion_activation[i] == 0:
+            conversion_shares[i] = 0
+
+    solar_activation = individual[len(conversion_activation) + len(settings.lower_bound_heat_recovery) : len(conversion_activation) + len(settings.lower_bound_heat_recovery) + len(settings.lower_bound_solar_technologies_activation)]
+    solar_shares = individual[discrete_variables + len(conversion_shares) : discrete_variables + len(conversion_shares) + len(settings.lower_bound_solar_technologies_shares) - 1]
+
+    for i in range(len(solar_activation)):
+        if solar_activation[i] == 0:
+            solar_shares[i] = 0
+
+    heat_recovery = individual[len(conversion_activation) : len(conversion_activation) + len(settings.lower_bound_heat_recovery)]
+    building_network = individual[len(conversion_activation) + len(heat_recovery) + len(solar_activation) : len(conversion_activation) + len(heat_recovery) + len(solar_activation) + settings.nBuildings]
+
+    updated_individual.extend(conversion_activation)
+    updated_individual.extend(heat_recovery)
+    updated_individual.extend(solar_activation)
+    updated_individual.extend(building_network)
+    updated_individual.extend(conversion_shares)
+    updated_individual.extend(solar_shares)
+
+    for i in range(len(updated_individual)):
+        individual[i] = updated_individual[i]
+
     return individual
 
 if __name__ == '__main__':
