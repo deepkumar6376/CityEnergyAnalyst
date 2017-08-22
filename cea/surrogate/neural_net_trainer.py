@@ -61,7 +61,7 @@ def neural_trainer(inputs_x,targets_t):
 
 
     # Fit the model
-    model.fit(inputs_x, targets_t, validation_split=validation_split, epochs=1500, batch_size=100000,callbacks=[estop])
+    model.fit(inputs_x, targets_t, validation_split=validation_split, epochs=1500, shuffle=True, batch_size=100000,callbacks=[estop])
 
 
     # predict ourputs
