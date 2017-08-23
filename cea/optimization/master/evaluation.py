@@ -191,28 +191,28 @@ def calc_master_to_slave_variables(individual, Qmax, locator, gv, settings):
             master_to_slave_vars.gt_fuel = "BG"
 
     # Base boiler NG 
-    if individual[2] == 1:
+    if individual[1] == 1:
         master_to_slave_vars.Boiler_on = 1
         master_to_slave_vars.Boiler_Q_max = max(individual[3] * Qnom, gv.QminShare * Qnom)
         print master_to_slave_vars.Boiler_Q_max, "Boiler base NG"
         master_to_slave_vars.BoilerType = "NG"
     
     # Base boiler BG    
-    if individual[2] == 2:
+    if individual[1] == 2:
         master_to_slave_vars.Boiler_on = 1
         master_to_slave_vars.Boiler_Q_max = max(individual[3] * Qnom, gv.QminShare * Qnom)
         print master_to_slave_vars.Boiler_Q_max, "Boiler base BG"
         master_to_slave_vars.BoilerType = "BG"
     
     # peak boiler NG         
-    if individual[4] == 1:
+    if individual[2] == 1:
         master_to_slave_vars.BoilerPeak_on = 1
         master_to_slave_vars.BoilerPeak_Q_max = max(individual[5] * Qnom, gv.QminShare * Qnom)
         print master_to_slave_vars.BoilerPeak_Q_max, "Boiler peak NG"
         master_to_slave_vars.BoilerPeakType = "NG"
     
     # peak boiler BG   
-    if individual[4] == 2:
+    if individual[2] == 2:
         master_to_slave_vars.BoilerPeak_on = 1
         master_to_slave_vars.BoilerPeak_Q_max = max(individual[5] * Qnom, gv.QminShare * Qnom)
         print master_to_slave_vars.BoilerPeak_Q_max, "Boiler peak BG"

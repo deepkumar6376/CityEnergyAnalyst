@@ -17,7 +17,7 @@ import cea.optimization.master.evaluation as evaluation
 from deap import base
 from deap import creator
 from deap import tools
-
+import multiprocessing as mp
 import cea.optimization.optimization_settings
 
 import cea.optimization.master.generation as generation
@@ -73,6 +73,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     t0 = time.clock()
     settings = cea.optimization.optimization_settings.optimization_settings()
     pop = []
+    objectives = []
 
     # get number of buildings
     nBuildings = len(building_names)
@@ -91,18 +92,24 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
         pop.append(generation.generate_main())
 
     ntwList = ["1" * nBuildings]
-    epsInd = []
-    invalid_ind = []
-
 
     for ind in pop:
         evaluation.checkNtw(ind, ntwList, locator, gv, settings)
-    evaluation.checkNtw(ind, ntwList, locator, gv, settings)
-    print (pop)
 
-    print (objective_function(pop[0]))
+    for ind in pop:
+        objectives.append(objective_function(ind))
 
+    ngen = 0
+    ks = 0
 
+    while (ngen < settings.NGEN):
+
+        ngen += 1
+        pop_new = pop
+
+        for ind in pop_new:
+            for counter1 in xrange(len(pop_new[0])):
+                print (pop_new[0])
 
 
 
@@ -254,6 +261,5 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     print "Master Work Complete \n"
     
     return pop, epsInd
-
 
 
