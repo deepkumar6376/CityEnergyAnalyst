@@ -14,8 +14,8 @@ __status__ = "Production"
 class optimization_settings(object):
     def __init__(self):
 
-        self.initialInd = 10  # number of initial individuals
-        self.NGEN = 50  # number of total generations
+        self.initialInd = 2  # number of initial individuals
+        self.NGEN = 5  # number of total generations
         self.fCheckPoint = 1  # frequency for the saving of checkpoints
         self.maxTime = 7 * 24 * 3600  # maximum computational time [seconds]
 
@@ -58,13 +58,16 @@ class optimization_settings(object):
         #  BOunds for optimization
         self.nBuildings = 24
         self.lower_bound_conversion_technologies_activation = [0] * (self.nHeat)  # discrete variables
+        #  the order of technologies is CHP/Furnace, Base Boiler, Peak Boiler, HP Lake, HP Sewage, GHP
         self.upper_bound_conversion_technologies_activation = [4, 2, 2, 1, 1, 1]  # discrete variables
         self.lower_bound_heat_recovery = [0] * (self.nHR)  # only ON or OFF, discrete variables
         self.upper_bound_heat_recovery = [1] * (self.nHR)  # discrete variables
         self.lower_bound_solar_technologies_activation = [0] * (self.nSolar)  # discrete variables
+        #  the order of technologies is PV, PVT, SC
         self.upper_bound_solar_technologies_activation = [1] * (self.nSolar)  # discrete variables
         self.lower_bound_buildings = [0] * (self.nBuildings)  # discrete variables
         self.upper_bound_buildings = [1] * (self.nBuildings)  # discrete variables
+        self.discrete_variables = self.nHeat + self.nHR + self.nSolar + self.nBuildings
 
         self.lower_bound_conversion_technologies_shares = [0] * (self.nHeat)  # continuous variables
         self.upper_bound_conversion_technologies_shares = [1] * (self.nHeat)  # continuous variables

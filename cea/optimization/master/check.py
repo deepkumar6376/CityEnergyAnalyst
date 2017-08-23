@@ -109,7 +109,7 @@ def putToRef(individual):
     individual[5] = 1   
 
 
-def GHPCheck(individual, locator, Qnom, gv):
+def GHPCheck(individual, locator, Qnom, gv, settings):
     """
     This function computes the geothermal availability and modifies the individual to
     comply with it
@@ -130,7 +130,7 @@ def GHPCheck(individual, locator, Qnom, gv):
     buildArray = np.array( pd.read_csv(locator.get_geothermal_potential(), usecols=["Name"] ) )
     
     buildList = sFn.extract_building_names_from_csv(locator.get_total_demand())
-    barcode = sFn.individual_to_barcode(individual)
+    barcode = sFn.individual_to_barcode(individual, gv, settings)
     
     Qallowed = 0
 
@@ -138,30 +138,28 @@ def GHPCheck(individual, locator, Qnom, gv):
         if index == "1":
             areaAvail = areaArray[ np.where(buildArray == buildName)[0][0] ][0]
             Qallowed += np.ceil(areaAvail/gv.GHP_A) * gv.GHP_HmaxSize #[W_th]
-    
-    print Qallowed, "Qallowed"
-    if Qallowed < individual[11] * Qnom:
+
+    GHP_share_index = len(settings.lower_bound) - len(settings.lower_bound_solar_technologies_shares) - 1
+    GHP_activation_index = len(settings.lower_bound_conversion_technologies_activation) - 1
+    if Qallowed < individual[GHP_share_index] * Qnom:
         print "GHP share modified !"
         
         if Qallowed < 1E-3:
-            oldValue = individual[11]
-            shareLoss = individual[11]
-            individual[10] =0
-            individual[11] =0
+            oldValue = individual[GHP_share_index]
+            shareLoss = individual[GHP_share_index]
+            individual[GHP_activation_index] =0
+            individual[GHP_share_index] =0
         
         else:
-            oldValue = individual[11]
+            oldValue = individual[GHP_share_index]
             shareLoss = oldValue - Qallowed / Qnom
-            individual[11] = Qallowed / Qnom
+            individual[GHP_share_index] = Qallowed / Qnom
         
         # Adapt the other shares
         nPlant = 0
         for i in range(gv.nHeat - 1):
-            if individual[2*i] > 0:
+            if individual[i] > 0:
                 nPlant += 1
-                individual[2*i+1] += individual[2*i+1] * shareLoss / (1-oldValue)
+                individual[settings.discrete_variables + i] += individual[settings.discrete_variables + i] * shareLoss / (1-oldValue)
         
-        if nPlant == 0: # there was only the GHP --> replaced by only NG Boiler
-            individual[2] = 1
-            individual[3] = 1-individual[11]
-
+    return individual

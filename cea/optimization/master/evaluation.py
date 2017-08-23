@@ -79,16 +79,13 @@ def evaluation_main(individual, building_names, locator, extraCosts, extraCO2, e
 
     print Qheatmax, "Qheatmax in distribution"
     Qnom = Qheatmax * (1 + gv.Qmargin_ntw)
-
+    print (individual)
     # Modify the individual with the extra GHP constraint
-    try:
-        cCheck.GHPCheck(individual, locator, Qnom, gv)
-        print "GHP constraint checked \n"
-    except:
-        print "No GHP constraint check possible \n"
+    individual = cCheck.GHPCheck(individual, locator, Qnom, gv, settings)
+    print (individual)
 
     # Export to context
-    master_to_slave_vars = calc_master_to_slave_variables(individual, Qheatmax, locator, gv)
+    master_to_slave_vars = calc_master_to_slave_variables(individual, Qheatmax, locator, gv, settings)
     master_to_slave_vars.NETWORK_DATA_FILE = network_file_name
 
     if master_to_slave_vars.nBuildingsConnected > 1:
@@ -138,7 +135,7 @@ def evaluation_main(individual, building_names, locator, extraCosts, extraCO2, e
 #+++++++++++++++++++++++++++++++++++
 # Boundary conditions
 #+++++++++++++++++++++++++++++
-def calc_master_to_slave_variables(individual, Qmax, locator, gv):
+def calc_master_to_slave_variables(individual, Qmax, locator, gv, settings):
     """
     This function reads the list encoding a configuration and implements the corresponding
     for the slave routine's to use
@@ -158,7 +155,7 @@ def calc_master_to_slave_variables(individual, Qmax, locator, gv):
     master_to_slave_vars = slave_data.SlaveData()
     master_to_slave_vars.configKey = "".join(str(e)[0:4] for e in individual)
     
-    individual_barcode = sFn.individual_to_barcode(individual, gv)
+    individual_barcode = sFn.individual_to_barcode(individual, gv, settings)
     master_to_slave_vars.nBuildingsConnected = individual_barcode.count("1") # counting the number of buildings connected
     
     Qnom = Qmax * (1+gv.Qmargin_ntw)
