@@ -269,7 +269,7 @@ def calc_master_to_slave_variables(individual, Qmax, locator, gv):
     return master_to_slave_vars
 
 
-def checkNtw(individual, ntwList, locator, gv):
+def checkNtw(individual, ntwList, locator, gv, settings):
     """
     This function calls the distribution routine if necessary
     
@@ -282,7 +282,7 @@ def checkNtw(individual, ntwList, locator, gv):
     :return: None
     :rtype: Nonetype
     """
-    indCombi = sFn.individual_to_barcode(individual, gv)
+    indCombi = sFn.individual_to_barcode(individual, gv, settings)
     print indCombi,2
     
     if not (indCombi in ntwList) and indCombi.count("1") > 0:

@@ -89,8 +89,15 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     # generate valid individuals
     for i in range(settings.initialInd):
         pop.append(generation.generate_main())
-        
-    evaluation.checkNtw(ind, ntwList, locator, gv)
+
+    ntwList = ["1" * nBuildings]
+    epsInd = []
+    invalid_ind = []
+
+
+    for ind in pop:
+        evaluation.checkNtw(ind, ntwList, locator, gv, settings)
+    evaluation.checkNtw(ind, ntwList, locator, gv, settings)
     print (pop)
 
     print (objective_function(pop[0]))
