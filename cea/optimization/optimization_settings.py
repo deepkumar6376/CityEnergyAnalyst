@@ -14,6 +14,8 @@ __status__ = "Production"
 class optimization_settings(object):
     def __init__(self):
 
+        self.scenario_reference = r'c:\reference-case-zug\baseline'
+
         self.initialInd = 2  # number of initial individuals
         self.NGEN = 5  # number of total generations
         self.TLS = self.initialInd  # Tabu List size
@@ -90,6 +92,10 @@ class optimization_settings(object):
         self.DeltaU = 12500.0E6  # [Wh], maximum change in the lake energy content at the end of the year (positive or negative)
         self.TLake = 5 + 273.0  # K
 
+        # Specific heat
+        self.cp = 4185  # [J/kg K]
+
+
         # Geothermal heat pump
 
         self.TGround = 6.5 + 273.0
@@ -143,6 +149,16 @@ class optimization_settings(object):
         self.PROBA = 0.5
         self.SIGMAP = 0.2
         self.epsMargin = 0.001
+
+        # Substation data
+        self.mdot_step_counter_heating = [0.05, 0.1, 0.15, 0.3, 0.4, 0.5, 0.6, 1]
+        self.mdot_step_counter_cooling = [0, 0.2, 0.5, 0.8, 1]
+        self.NetworkLengthReference = 1745.0  # meters of network length of max network. (Reference = Zug Case Study) , from J. Fonseca's Pipes Data
+        self.PipeCostPerMeterInv = 660.0  # CHF /m
+        self.PipeLifeTime = 40.0  # years, Data from A&W
+        self.PipeInterestRate = 0.05  # 5% interest rate
+        self.PipeCostPerMeterAnnual = self.PipeCostPerMeterInv / self.PipeLifeTime
+        self.NetworkDepth = 1 # m
 
         #  BOunds for optimization
         self.nBuildings = 24

@@ -300,7 +300,7 @@ def checkNtw(individual, ntwList, locator, settings):
 
             # Run the substation and distribution routines
             print "Re-run the substation routine for new distribution configuration", indCombi
-            sMain.substation_main(locator, total_demand, building_names, indCombi)
+            sMain.substation_main(locator, total_demand, building_names, settings, indCombi )
             
             print "Launch distribution summary routine"
             nM.network_main(locator, total_demand, building_names, indCombi)

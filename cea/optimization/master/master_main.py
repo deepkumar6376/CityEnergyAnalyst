@@ -21,7 +21,7 @@ from deap import base
 from deap import creator
 from deap import tools
 import multiprocessing as mp
-import cea.optimization.optimization_settings
+
 
 import cea.optimization.master.generation as generation
 import mutations as mut
@@ -74,7 +74,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     :rtype: pickled file
     """
     t0 = time.clock()
-    settings = cea.optimization.optimization_settings.optimization_settings()
+
     pop = []
     objectives = []
 

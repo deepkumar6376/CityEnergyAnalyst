@@ -29,7 +29,7 @@ __email__ = "thomas@arch.ethz.ch"
 __status__ = "Production"
 
 
-def preproccessing(locator, total_demand, building_names, weather_file, gv):
+def preproccessing(locator, total_demand, building_names, weather_file, settings):
     """
     This function aims at preprocessing all data for the optimization.
 
@@ -57,8 +57,8 @@ def preproccessing(locator, total_demand, building_names, weather_file, gv):
     # GET ENERGY POTENTIALS
     # geothermal
     T_ambient = epwreader.epw_reader(weather_file)['drybulb_C']
-    network_depth_m = gv.NetworkDepth # [m]
-    gv.ground_temperature = geothermal.calc_ground_temperature(locator, T_ambient.values, network_depth_m)
+    network_depth_m = settings.NetworkDepth # [m]
+    settings.ground_temperature = geothermal.calc_ground_temperature(locator, T_ambient.values, network_depth_m)
 
     # solar
     print "Solar features extraction"
@@ -67,7 +67,7 @@ def preproccessing(locator, total_demand, building_names, weather_file, gv):
     # GET LOADS IN SUBSTATIONS
     # prepocess space heating, domestic hot water and space cooling to substation.
     print "Run substation model for each building separately"
-    substation.substation_main(locator, total_demand, building_names, gv, Flag = True) # True if disconected buildings are calculated
+    substation.substation_main(locator, total_demand, building_names, settings, Flag = True) # True if disconected buildings are calculated
 
     # GET COMPETITIVE ALTERNATIVES TO A NETWORK
     # estimate what would be the operation of single buildings only for heating.
@@ -78,16 +78,16 @@ def preproccessing(locator, total_demand, building_names, weather_file, gv):
     # GET DH NETWORK
     # at first estimate a distribution with all the buildings connected at it.
     print "Create distribution file with all buildings connected"
-    summarize_network.network_main(locator, total_demand, building_names, gv, "all") #"_all" key for all buildings
+    summarize_network.network_main(locator, total_demand, building_names, settings, "all") #"_all" key for all buildings
 
     # GET EXTRAS
     # estimate the extra costs, emissions and primary energy of electricity.
     print "electricity"
-    elecCosts, elecCO2, elecPrim = electricity.calc_pareto_electricity(locator, gv)
+    elecCosts, elecCO2, elecPrim = electricity.calc_pareto_electricity(locator, settings)
 
     # estimate the extra costs, emissions and primary energy for process heat
     print "Process-heat"
-    hpCosts, hpCO2, hpPrim = process_heat.calc_pareto_Qhp(locator, total_demand, gv)
+    hpCosts, hpCO2, hpPrim = process_heat.calc_pareto_Qhp(locator, total_demand, settings)
 
     extraCosts = elecCosts + hpCosts
     extraCO2 = elecCO2 + hpCO2
@@ -115,18 +115,17 @@ def run_as_script(scenario_path=None):
     """
     run the whole preprocessing routine
     """
-    import cea.globalvar
+    import cea.optimization.optimization_settings
 
-    gv = cea.globalvar.GlobalVariables()
-
+    settings = cea.optimization.optimization_settings.optimization_settings()
     if scenario_path is None:
-        scenario_path = gv.scenario_reference
+        scenario_path = settings.scenario_reference
 
     locator = cea.inputlocator.InputLocator(scenario_path=scenario_path)
     total_demand = pd.read_csv(locator.get_total_demand())
     building_names = pd.read_csv(locator.get_total_demand())['Name']
     weather_file = locator.get_default_weather()
-    preproccessing(locator, total_demand, building_names, weather_file, gv)
+    preproccessing(locator, total_demand, building_names, weather_file, settings)
 
     print 'test_preprocessing_main() succeeded'
 

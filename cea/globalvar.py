@@ -264,15 +264,7 @@ class GlobalVariables(object):
         self.TsupCool = 6 + 273
         self.TretCoolMax = 12 + 273.0
 
-        # Substation data
-        self.mdot_step_counter_heating = [0.05, 0.1, 0.15, 0.3, 0.4, 0.5, 0.6, 1]
-        self.mdot_step_counter_cooling = [0, 0.2, 0.5, 0.8, 1]
-        self.NetworkLengthReference = 1745.0  # meters of network length of max network. (Reference = Zug Case Study) , from J. Fonseca's Pipes Data
-        self.PipeCostPerMeterInv = 660.0  # CHF /m
-        self.PipeLifeTime = 40.0  # years, Data from A&W
-        self.PipeInterestRate = 0.05  # 5% interest rate
-        self.PipeCostPerMeterAnnual = self.PipeCostPerMeterInv / self.PipeLifeTime
-        self.NetworkDepth = 1 # m
+
 
         # Solar area to Wpeak
         self.eta_area_to_peak = 0.16  # Peak Capacity - Efficiency, how much kW per area there are, valid for PV and PVT (after Jimeno's J+)

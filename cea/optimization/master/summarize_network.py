@@ -21,7 +21,7 @@ __email__ = "thomas@arch.ethz.ch"
 __status__ = "Production"
 
 
-def network_main(locator, total_demand, building_names, gv, key):
+def network_main(locator, total_demand, building_names, settings, key):
     """
     This function summarizes the distribution demands and will give them as:
     - absolute values (design values = extreme values)
