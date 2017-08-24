@@ -50,7 +50,7 @@ def extractDemand(fName, colNameList, nDay):
     return result
 
 
-def calcQmax(fName, filepath, gV):
+def calcQmax(fName, filepath):
     """
     Calculates the peak heating power in fName file
     
@@ -70,7 +70,7 @@ def calcQmax(fName, filepath, gV):
     return Qmax
     
 
-def individual_to_barcode(individual, gV, settings):
+def individual_to_barcode(individual, settings):
     """
     Reads the 0-1 combination of connected/disconnected buildings
     and creates a list of strings type barcode i.e. ("12311111123012")

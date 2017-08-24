@@ -11,6 +11,9 @@ import time
 from pickle import Pickler, Unpickler
 import csv
 import json
+import random
+import pandas as pd
+import check as cCheck
 
 import cea.optimization.master.crossover as cx
 import cea.optimization.master.evaluation as evaluation
@@ -35,7 +38,7 @@ __status__ = "Production"
 
 
 def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extra_primary_energy, solar_features,
-                           network_features, gv, genCP=0):
+                           network_features):
     """
     Evolutionary algorithm to optimize the district energy system's design.
     This algorithm optimizes the size and operation of technologies for a district heating network.
@@ -81,7 +84,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     # DEFINE OBJECTIVE FUNCTION
     def objective_function(ind):
         (costs, CO2, prim) = evaluation.evaluation_main(ind, building_names, locator, extra_costs, extra_CO2, extra_primary_energy, solar_features,
-                                                        network_features, gv, settings)
+                                                        network_features, settings)
         return (costs, CO2, prim)
 
     # SET-UP EVOLUTIONARY ALGORITHM
@@ -94,22 +97,78 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
     ntwList = ["1" * nBuildings]
 
     for ind in pop:
-        evaluation.checkNtw(ind, ntwList, locator, gv, settings)
+        evaluation.checkNtw(ind, ntwList, locator, settings)
+
+
 
     for ind in pop:
         objectives.append(objective_function(ind))
 
+
+
+    TL = pop
     ngen = 0
     ks = 0
+    TLS = settings.TLS
+    TR = settings.TR
 
     while (ngen < settings.NGEN):
 
         ngen += 1
         pop_new = pop
+        kont = 0
 
-        for ind in pop_new:
-            for counter1 in xrange(len(pop_new[0])):
-                print (pop_new[0])
+        for counter3 in range(len(pop_new)) :
+            random_1 = random.randint(0, len(pop_new)-1)
+            random_2 = random.randint(0, len(pop_new)-1)
+            random_3 = random.randint(0, len(pop_new)-1)
+            XoverP = 0.5
+            MutP = 0.5
+            new_individual = [0] * len(pop_new[0])
+
+            for counter1 in range(len(pop_new[0])):
+                Xrandom = random.random()
+                Jrandom = random.randint(0, len(pop_new[0])-1)
+
+                if (Xrandom < XoverP or Jrandom == counter1):
+                    new_individual[counter1] = pop_new[random_1][counter1] + MutP * (pop_new[random_2][counter1] - pop_new[random_3][counter1])
+                else:
+                    new_individual[counter1] = pop_new[counter3][counter1]
+
+                if (new_individual[counter1] < settings.lower_bound[counter1] or new_individual[counter1] > settings.upper_bound[counter1]):
+                    new_individual[counter1] = settings.lower_bound[counter1] + (settings.upper_bound[counter1] - settings.lower_bound[counter1]) * random.random()
+
+                if (counter1 < settings.discrete_variables):
+                    new_individual[counter1] = int(round(new_individual[counter1]))
+
+            # #  Normalized Euclidean distance calculation
+            #
+            # ED = 1000
+            #
+            # for i in xrange(1, TLS):
+            #
+            #     ED0 = 0
+            #
+            #     for j in range(len(pop_new[0])):
+            #         ED0 += ((new_individual[j] - TL[i][j]) / (settings.upper_bound[j] - settings.lower_bound[j]))**2
+            #
+            #     ED_new = ED0 ** 0.5
+            #
+            #     if ED_new < ED:
+            #         ED = ED_new
+            #
+            #     print (ED)
+            #
+            #
+            # if ED > TR:
+            #     kont += 1
+            #     s
+
+
+
+
+            print (new_individual)
+
 
 
 
