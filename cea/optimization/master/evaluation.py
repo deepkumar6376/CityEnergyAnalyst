@@ -81,11 +81,11 @@ def evaluation_main(individual, building_names, locator, extraCosts, extraCO2, e
     Qnom = Qheatmax * (1 + settings.Qmargin_ntw)
     print (individual)
     # Modify the individual with the extra GHP constraint
-    individual = cCheck.GHPCheck(individual, locator, Qnom, gv, settings)
+    individual = cCheck.GHPCheck(individual, locator, Qnom, settings)
     print (individual)
 
     # Export to context
-    master_to_slave_vars = calc_master_to_slave_variables(individual, Qheatmax, locator, gv, settings)
+    master_to_slave_vars = calc_master_to_slave_variables(individual, Qheatmax, locator, settings)
     master_to_slave_vars.NETWORK_DATA_FILE = network_file_name
 
     if master_to_slave_vars.nBuildingsConnected > 1:
@@ -115,7 +115,7 @@ def evaluation_main(individual, building_names, locator, extraCosts, extraCO2, e
                                               QUncoveredAnnual, solar_features, network_features)
     print addCosts, addCO2, addPrim, "addCosts, addCO2, addPrim \n"
 
-    if gv.ZernezFlag == 1:
+    if settings.ZernezFlag == 1:
         coolCosts, coolCO2, coolPrim = 0, 0, 0
     else:
         (coolCosts, coolCO2, coolPrim) = coolMain.coolingMain(locator, master_to_slave_vars.configKey, network_features,
@@ -165,12 +165,12 @@ def calc_master_to_slave_variables(individual, Qmax, locator, settings):
     
     #CHP units with NG & furnace with biomass wet
     if individual[0] == 1 or individual[0] == 3:
-        if gv.Furnace_allowed == 1:
+        if settings.Furnace_allowed == 1:
             master_to_slave_vars.Furnace_on = 1
             master_to_slave_vars.Furnace_Q_max = max(individual[discrete_variables + 0] * Qnom, settings.QminShare * Qnom)
             print master_to_slave_vars.Furnace_Q_max, "Furnace wet"
             master_to_slave_vars.Furn_Moist_type = "wet"
-        elif gv.CC_allowed == 1:
+        elif settings.CC_allowed == 1:
             master_to_slave_vars.CC_on = 1
             master_to_slave_vars.CC_GT_SIZE = max(individual[discrete_variables + 0] * Qnom * 1.3, settings.QminShare * Qnom * 1.3)
             #1.3 is the conversion factor between the GT_Elec_size NG and Q_DHN
@@ -179,12 +179,12 @@ def calc_master_to_slave_variables(individual, Qmax, locator, settings):
      
     #CHP units with BG& furnace with biomass dry       
     if individual[0] == 2 or individual[0] == 4:
-        if gv.Furnace_allowed == 1:
+        if settings.Furnace_allowed == 1:
             master_to_slave_vars.Furnace_on = 1
             master_to_slave_vars.Furnace_Q_max = max(individual[discrete_variables + 0] * Qnom, settings.QminShare * Qnom)
             print master_to_slave_vars.Furnace_Q_max, "Furnace dry"
             master_to_slave_vars.Furn_Moist_type = "dry"
-        elif gv.CC_allowed == 1:
+        elif settings.CC_allowed == 1:
             master_to_slave_vars.CC_on = 1
             master_to_slave_vars.CC_GT_SIZE = max(individual[discrete_variables + 0] * Qnom * 1.5, settings.QminShare * Qnom * 1.5)
             #1.5 is the conversion factor between the GT_Elec_size BG and Q_DHN
@@ -220,22 +220,22 @@ def calc_master_to_slave_variables(individual, Qmax, locator, settings):
         master_to_slave_vars.BoilerPeakType = "BG"
     
     # lake - heat pump
-    if individual[3] == 1  and gv.HPLake_allowed == 1:
+    if individual[3] == 1  and settings.HPLake_allowed == 1:
         master_to_slave_vars.HP_Lake_on = 1
         master_to_slave_vars.HPLake_maxSize = max(individual[discrete_variables + 3] * Qnom, settings.QminShare * Qnom)
         print master_to_slave_vars.HPLake_maxSize, "Lake"
     
     # sewage - heatpump    
-    if individual[4] == 1 and gv.HPSew_allowed == 1:
+    if individual[4] == 1 and settings.HPSew_allowed == 1:
         master_to_slave_vars.HP_Sew_on = 1
         master_to_slave_vars.HPSew_maxSize = max(individual[discrete_variables + 4] * Qnom, settings.QminShare * Qnom)
         print master_to_slave_vars.HPSew_maxSize, "Sewage"
     
     # Gwound source- heatpump
-    if individual[5] == 1 and gv.GHP_allowed == 1:
+    if individual[5] == 1 and settings.GHP_allowed == 1:
         master_to_slave_vars.GHP_on = 1
         GHP_Qmax = max(individual[discrete_variables + 5] * Qnom, settings.QminShare * Qnom)
-        master_to_slave_vars.GHP_number = GHP_Qmax / gv.GHP_HmaxSize
+        master_to_slave_vars.GHP_number = GHP_Qmax / settings.GHP_HmaxSize
         print GHP_Qmax, "GHP"
     
     # heat recovery servers and compresor
@@ -292,7 +292,7 @@ def checkNtw(individual, ntwList, locator, settings):
                 os.path.join(locator.get_optimization_network_results_folder(), "Total_%(indCombi)s.csv" % locals()))
             building_names = total_demand.Name.values
             print "Direct launch of distribution summary routine for", indCombi
-            nM.network_main(locator, total_demand, building_names, gv, indCombi)
+            nM.network_main(locator, total_demand, building_names, settings, indCombi)
 
         else:
             total_demand = sFn.createTotalNtwCsv(indCombi, locator)

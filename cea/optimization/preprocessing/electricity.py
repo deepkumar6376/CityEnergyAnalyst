@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 
-def calc_pareto_electricity(locator, gv):
+def calc_pareto_electricity(locator, settings):
     """
     This function computes the parameters for the electrical demand contributing to the pareto optimal alternatives.
     in the future, this aspect should be included in the optimization itself.

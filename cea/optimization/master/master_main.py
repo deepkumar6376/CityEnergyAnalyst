@@ -38,7 +38,7 @@ __status__ = "Production"
 
 
 def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extra_primary_energy, solar_features,
-                           network_features):
+                           network_features, settings):
     """
     Evolutionary algorithm to optimize the district energy system's design.
     This algorithm optimizes the size and operation of technologies for a district heating network.
@@ -195,7 +195,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
 
         # Check distribution
         for ind in pop:
-            evaluation.checkNtw(ind, ntwList, locator, gv)
+            evaluation.checkNtw(ind, ntwList, locator, settings)
 
         # Evaluate the initial population
         print "Evaluate initial population"
@@ -238,7 +238,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
         # Apply crossover and mutation on the pop
         print "CrossOver"
         for ind1, ind2 in zip(pop[::2], pop[1::2]):
-            child1, child2 = cx.cxUniform(ind1, ind2, PROBA, gv)
+            child1, child2 = cx.cxUniform(ind1, ind2, PROBA, settings)
             offspring += [child1, child2]
 
         # for mutant in pop:
@@ -246,16 +246,16 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
 
 
         # First half of the master: create new un-correlated configurations
-        if g <= gv.NGEN:
+        if g <= settings.NGEN:
             for mutant in pop:
                 print "Mutation Flip"
-                mutant = mut.mutFlip(mutant, PROBA, gv)
-                # offspring.append(mut.mutFlip(mutant, PROBA, gv))
+                mutant = mut.mutFlip(mutant, PROBA, settings)
+                # offspring.append(mut.mutFlip(mutant, PROBA, settings))
                 print "Mutation Shuffle"
-                mutant = mut.mutShuffle(mutant, PROBA, gv)
-                # offspring.append(mut.mutShuffle(mutant, PROBA, gv))
+                mutant = mut.mutShuffle(mutant, PROBA, settings)
+                # offspring.append(mut.mutShuffle(mutant, PROBA, settings))
                 print "Mutation GU \n"
-                offspring.append(mut.mutGU(mutant, PROBA, gv))
+                offspring.append(mut.mutGU(mutant, PROBA, settings))
 
         # Evaluate the individuals with an invalid fitness
         # NB: every generation leads to the reevaluation of (n/2) / (n/4) / (n/4) individuals
@@ -264,7 +264,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
 
         print "Update Network list \n"
         for ind in invalid_ind:
-            evaluation.checkNtw(ind, ntwList, locator, gv)
+            evaluation.checkNtw(ind, ntwList, locator, settings)
 
         print "Re-evaluate the population"
         fitnesses = map(toolbox.evaluate, invalid_ind)
@@ -276,7 +276,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
         print "....................................... \n"
 
         # Select the Pareto Optimal individuals
-        selection = sel.selectPareto(offspring,gv)
+        selection = sel.selectPareto(offspring,settings)
 
         # Compute the epsilon criteria [and check the stopping criteria]
         epsInd.append(evaluation.epsIndicator(pop, selection))
@@ -295,7 +295,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
         print "....................................... \n"
 
         # Create Checkpoint if necessary
-        if g % gv.fCheckPoint == 0:
+        if g % settings.fCheckPoint == 0:
             print "Create CheckPoint", g, "\n"
             fitnesses = map(toolbox.evaluate, pop)
             with open(locator.get_optimization_checkpoint(g), "wb") as fp:
@@ -303,7 +303,7 @@ def evolutionary_algo_main(locator, building_names, extra_costs, extra_CO2, extr
                           population_fitness=fitnesses)
                 json.dump(cp, fp)
 
-    if g == gv.NGEN:
+    if g == settings.NGEN:
         print "Final Generation reached"
     else:
         print "Stopping criteria reached"

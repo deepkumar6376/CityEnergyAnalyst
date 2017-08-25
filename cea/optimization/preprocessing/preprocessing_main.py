@@ -57,8 +57,7 @@ def preproccessing(locator, total_demand, building_names, weather_file, settings
     # GET ENERGY POTENTIALS
     # geothermal
     T_ambient = epwreader.epw_reader(weather_file)['drybulb_C']
-    network_depth_m = settings.NetworkDepth # [m]
-    settings.ground_temperature = geothermal.calc_ground_temperature(locator, T_ambient.values, network_depth_m)
+    settings.ground_temperature = geothermal.calc_ground_temperature(locator, T_ambient.values, settings)
 
     # solar
     print "Solar features extraction"
@@ -73,7 +72,7 @@ def preproccessing(locator, total_demand, building_names, weather_file, settings
     # estimate what would be the operation of single buildings only for heating.
     # For cooling all buildings are assumed to be connected to the cooling distribution on site.
     print "Run decentralized model for buildings"
-    # decentralized_buildings.decentralized_main(locator, building_names, gv)
+    decentralized_buildings.decentralized_main(locator, building_names, settings)
 
     # GET DH NETWORK
     # at first estimate a distribution with all the buildings connected at it.
@@ -98,13 +97,13 @@ def preproccessing(locator, total_demand, building_names, weather_file, settings
 
 class SolarFeatures(object):
     def __init__(self, locator):
-        self.PV_Peak = pd.read_csv(os.path.join(locator.get_potentials_solar_folder(), "Pv.csv"), usecols=["E_PV_gen_kWh"]).values.max()
-        self.SolarAreaPV = pd.read_csv(os.path.join(locator.get_potentials_solar_folder(), "Pv.csv"), usecols=["A_PV_m2"]).values.max()
-        self.PVT_Peak = pd.read_csv(os.path.join(locator.get_potentials_solar_folder(), "PVT_35.csv"), usecols=["E_PVT_gen_kWh"]).values.max()
-        self.PVT_Qnom = pd.read_csv(os.path.join(locator.get_potentials_solar_folder(), "PVT_35.csv"), usecols=["Q_PVT_gen_kWh"]).values.max()*1000
-        self.SolarAreaPVT = pd.read_csv(os.path.join(locator.get_potentials_solar_folder(), "PVT_35.csv"), usecols=["A_PVT_m2"]).values.max()
-        self.SC_Qnom = pd.read_csv(os.path.join(locator.get_potentials_solar_folder(), "SC_75.csv"), usecols=["Q_SC_gen_kWh"]).values.max()* 1000
-        self.SolarAreaSC = pd.read_csv(os.path.join(locator.get_potentials_solar_folder(), "SC_75.csv"), usecols=["A_SC_m2"]).values.max()
+        self.PV_Peak = pd.read_csv(os.path.join(locator.get_potentials_solar_folder(), "Pv.csv"), usecols=["PV_kWh"]).values.max()
+        self.SolarAreaPV = pd.read_csv(os.path.join(locator.get_potentials_solar_folder(), "Pv.csv"), usecols=["Area"]).values.max()
+        self.PVT_Peak = pd.read_csv(os.path.join(locator.get_potentials_solar_folder(), "PVT_35.csv"), usecols=["PV_kWh"]).values.max()
+        self.PVT_Qnom = pd.read_csv(os.path.join(locator.get_potentials_solar_folder(), "PVT_35.csv"), usecols=["Qsc_KWh"]).values.max()*1000
+        self.SolarAreaPVT = pd.read_csv(os.path.join(locator.get_potentials_solar_folder(), "PVT_35.csv"), usecols=["Area"]).values.max()
+        self.SC_Qnom = pd.read_csv(os.path.join(locator.get_potentials_solar_folder(), "SC_75.csv"), usecols=["Qsc_Kw"]).values.max()* 1000
+        self.SolarAreaSC = pd.read_csv(os.path.join(locator.get_potentials_solar_folder(), "SC_75.csv"), usecols=["Area"]).values.max()
 
 #============================
 #test
