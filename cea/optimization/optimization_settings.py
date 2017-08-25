@@ -57,6 +57,37 @@ class optimization_settings(object):
         self.USD_TO_CHF = 0.96
         self.MWST = 0.08  # 8% MWST assumed, used in A+W data
 
+        ######### ELECTRICITY
+        self.CC_EL_TO_TOTAL = 4 / 9
+
+        self.EL_TO_OIL_EQ = 2.69  # MJ_oil / MJ_final
+        self.EL_TO_CO2 = 0.0385  # kg_CO2 / MJ_final - CH Verbrauchermix nach EcoBau
+
+        self.EL_TO_OIL_EQ_GREEN = 0.0339  # MJ_oil / MJ_final
+        self.EL_TO_CO2_GREEN = 0.00398  # kg_CO2 / MJ_final
+
+        self.EL_NGCC_TO_OIL_EQ_STD = 2.94 * 0.78 * self.CC_EL_TO_TOTAL  # MJ_oil / MJ_final
+        self.EL_NGCC_TO_CO2_STD = 0.186 * 0.78 * self.CC_EL_TO_TOTAL  # kg_CO2 / MJ_final
+
+        if self.FlagBioGasFromAgriculture == 1:  # Use Biogas from Agriculture
+            self.EL_BGCC_TO_OIL_EQ_STD = 0.156 * 0.78 * self.CC_EL_TO_TOTAL  # kg_CO2 / MJ_final
+            self.EL_BGCC_TO_CO2_STD = 0.0495 * 0.78 * self.CC_EL_TO_TOTAL  # kg_CO2 / MJ_final
+        else:
+            self.EL_BGCC_TO_OIL_EQ_STD = 0.851 * 0.78 * self.CC_EL_TO_TOTAL  # kg_CO2 / MJ_final
+            self.EL_BGCC_TO_CO2_STD = 0.114 * 0.78 * self.CC_EL_TO_TOTAL  # kg_CO2 / MJ_final
+
+        self.EL_FURNACE_TO_OIL_EQ_STD = 0.141 * 0.78 * self.CC_EL_TO_TOTAL  # MJ_oil / MJ_final
+        self.EL_FURNACE_TO_CO2_STD = 0.0285 * 0.78 * self.CC_EL_TO_TOTAL  # kg_CO2 / MJ_final
+
+        self.EL_PV_TO_OIL_EQ = 0.345  # MJ_oil / MJ_final
+        self.EL_PV_TO_CO2 = 0.02640  # kg_CO2 / MJ_final
+
+        # Financial Data
+        self.EURO_TO_CHF = 1.2
+        self.CHF_TO_EURO = 1.0 / self.EURO_TO_CHF
+        self.USD_TO_CHF = 0.96
+        self.MWST = 0.08  # 8% MWST assumed, used in A+W data
+
         # Pressure losses
         # self.DeltaP_DCN = 1.0 #Pa - change
         # self.DeltaP_DHN = 84.8E3 / 10.0 #Pa  - change
@@ -84,6 +115,18 @@ class optimization_settings(object):
 
         self.HP_Auxratio = 0.83  # Wdot_comp / Wdot_total (circulating pumps)
 
+        self.Boiler_eta_hp = 0.9
+
+
+        self.NG_BACKUPBOILER_TO_CO2_STD = 0.0691 * 0.87  # kg_CO2 / MJ_useful
+        self.BG_BACKUPBOILER_TO_CO2_STD = 0.04 * 0.87  # kg_CO2 / MJ_useful
+
+        self.NG_BACKUPBOILER_TO_OIL_STD = 1.16 * 0.87  # MJ_oil / MJ_useful
+        self.BG_BACKUPBOILER_TO_OIL_STD = 0.339 * 0.87  # MJ_oil / MJ_useful
+
+        self.etaElToHeat = 0.75  # [-]
+        self.TElToHeatSup = 80 + 273.0  # K
+        self.TElToHeatRet = 70 + 273.0  # K
         # Sewage resource
 
         self.Sew_minT = 10 + 273.0  # minimum temperature at the sewage exit [K]
@@ -159,6 +202,32 @@ class optimization_settings(object):
         self.PipeInterestRate = 0.05  # 5% interest rate
         self.PipeCostPerMeterAnnual = self.PipeCostPerMeterInv / self.PipeLifeTime
         self.NetworkDepth = 1 # m
+
+        # ==============================================================================================================
+        # Initial temperatures for demand calculation
+        # ==============================================================================================================
+        self.initial_temp_air_prev = 21
+        self.initial_temp_m_prev = 16
+
+        self.HP_n = 20  # lifetime [years] default 20
+        self.GHP_nHP = 20  # for the geothermal heat pump default 20
+        self.Boiler_n = 20  # lifetime, after A+W, default 20
+        self.CC_n = 25  # lifetime default 25
+        self.FC_n = 10  # years of operation default 10
+        self.PVT_n = 20  # years of operation default 20
+        self.SC_n = self.PVT_n  # years of operation default 20
+        self.CT_a = 0.15  # annuity factor default 0.15
+        self.Subst_n = 20  # Lifetime after A+W default 20
+        self.ELEC_PRICE = 0.2 * self.EURO_TO_CHF / 1000.0  # default 0.2
+        # self.ELEC_PRICE_KEV = 1.5 * ELEC_PRICE # MAKE RESEARCH ABOUT A PROPER PRICE AND DOCUMENT THAT!
+        # self.ELEC_PRICE_GREEN = 1.5 * ELEC_PRICE
+        self.NG_PRICE = 0.068 * self.EURO_TO_CHF / 1000.0  # [CHF / wh] # default 0.068
+        self.BG_PRICE = 0.076 * self.EURO_TO_CHF / 1000.0  # [CHF / wh] # default 0.076
+        self.cPump = self.ELEC_PRICE * 24. * 365.  # coupled to electricity cost
+        self.Subst_i = 0.05 # default 0.05
+        self.FC_i = 0.05 # interest rate default 0.05
+        self.HP_i = 0.05  # interest rate default 0.05
+        self.Boiler_i = 0.05  # interest rate default 0.05
 
         #  BOunds for optimization
         self.nBuildings = 24

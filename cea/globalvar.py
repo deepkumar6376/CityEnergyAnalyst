@@ -352,55 +352,6 @@ class GlobalVariables(object):
 
         # ELCO-Loesungsbeispiel-Huber.pdf
 
-        self.Boiler_C_fuel = 20.0  # € / MWh_therm_bought(for LHV), AFO
-        self.Boiler_C_labour = 4.0  # [€ /MWh_therm_sold]
-        self.Boiler_P_aux = 0.026  # 0.026 Wh/Wh_th_sold = 26 kWh_el / MWh_th_sold, bioenergy 2020
-        self.Boiler_min = 0.05  # minimum Part Load of Boiler
-        self.Boiler_equ_ratio = 0.2  # 20% own capital required (equity ratio)
-        self.Boiler_C_maintainance = 0.05  # 5 % of capital cost (3% boiler, 2% techn. facilities) by AFO, currently not used
-        # Boiler_C_maintainance_fazNG = 3.5  /1E6 * EURO_TO_CHF # 3.5 Euro  /MWh_th
-        # Boiler_C_maintainance_fazBG = 10.4 /1E6 * EURO_TO_CHF # 10.4 Euro /MWh_th
-        self.Boiler_C_maintainance_faz = 3.5
-        self.Boiler_eta_hp = 0.9
-
-        # Furnace
-        self.Furn_FuelCost_wet = 0.057 * 1E-3  # CHF / Wh = 5.7 Rp / kWh for wet (50wt%) Wood Chips, after
-        self.Furn_FuelCost_dry = 0.07 * 1E-3  # CHF / Wh = 7 Rp / kWh for dry (30wt%) Wood Chips,
-        self.Furn_min_Load = 0.2  # Minimum load possible (does not affect Model itself!)
-        self.Furn_min_electric = 0.3  # Minimum load for electricity generation in furnace plant
-
-        # Substation Heat Exchangers
-
-
-        # Fuel Cells
-        self.FC_OP_HOURS_PER_YEAR = 4000.0  # hours / year
-        self.FC_LIFETIME = 40000.0  # hours of operation
-
-        self.FC_stack_cost = 12000.0  # CHF /kW_th for a Hexis 1000 N 1kWe/1.8kWth
-        self.FC_overhead = 0.1  # 10 % higher cost due to final installation
-
-        # Vapor compressor chiller
-        self.VCC_maxSize = 3500.0E3  # maximum size [W]
-        self.VCC_n = 25.0  # service life
-        self.VCC_tcoolin = 30 + 273.0  # entering condenser water temperature [K]
-        self.VCC_minload = 0.1  # min load for cooling power
-
-        # Cooling tower
-        self.CT_maxSize = 10.0E6  # cooling power desin size [W]
-        self.CT_n = 20.0
-
-
-        # Storage
-        self.T_storage_min = 10 + 273.0  # K  - Minimum Storage Temperature
-        self.StorageMaxUptakeLimitFlag = 1  # set a maximum for the HP Power for storage charging / decharging
-        self.QtoStorageMax = 1e6  # 100kW maximum peak
-
-        # Activation Order of Power Plants
-        # solar sources are treated first
-        self.act_first = 'HP'  # accounts for all kind of HP's as only one will be in the system.
-        self.act_second = 'CHP'  # accounts for ORC and NG-RC (produce electricity!)
-        self.act_third = 'BoilerBase'  # all conventional boilers are considered to be backups.
-        self.act_fourth = 'BoilerPeak'  # additional Peak Boiler
 
         # Data for Evolutionary algorithm
         self.nHeat = 6  # number of heating

@@ -102,7 +102,7 @@ def evaluation_main(individual, building_names, locator, extraCosts, extraCO2, e
         print "Slave routine on", master_to_slave_vars.configKey
         (slavePrim, slaveCO2, slaveCosts, QUncoveredDesign, QUncoveredAnnual) = sM.slave_main(locator,
                                                                                               master_to_slave_vars,
-                                                                                              solar_features)
+                                                                                              solar_features, settings)
         costs += slaveCosts
         CO2 += slaveCO2
         prim += slavePrim
@@ -303,7 +303,7 @@ def checkNtw(individual, ntwList, locator, settings):
             sMain.substation_main(locator, total_demand, building_names, settings, indCombi )
             
             print "Launch distribution summary routine"
-            nM.network_main(locator, total_demand, building_names, indCombi)
+            nM.network_main(locator, total_demand, building_names, settings, indCombi)
 
 
 def epsIndicator(frontOld, frontNew):
