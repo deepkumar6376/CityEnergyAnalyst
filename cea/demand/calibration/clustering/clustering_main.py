@@ -31,11 +31,10 @@ __email__ = "cea@arch.ethz.ch"
 __status__ = "Production"
 
 
-def clustering_main(locator, data,  word_size, alphabet_size, gv):
+def clustering_main(locator, data,  word_size, alphabet_size):
     """
     Function to cluster different days of the year following the SAX method (see class for more info)
     :param locator: locator class
-    :param gv: global variables class
     :param word_size: estimated word size, after optimization
     :param alphabet_size: estimated alphabet size. after optimization
     :param building_name: building name to make the cluster of its time series
@@ -56,8 +55,8 @@ def clustering_main(locator, data,  word_size, alphabet_size, gv):
     sax = [s.to_letter_representation(x)[0] for x in data]
 
     # calculate dict with data per hour for the whole year and create groups per pattern
-    hours_of_day = range(24)
-    days_of_year = range(365)
+    hours_of_day = range(len(data[0]))
+    days_of_year = range(len(data))
     list_of_timeseries_transposed = [list(x) for x in zip(*data)]
     dict_data = dict((group, x) for group, x in zip(hours_of_day, list_of_timeseries_transposed))
     dict_data.update({'sax': sax, 'day': days_of_year})
@@ -90,7 +89,6 @@ def clustering_main(locator, data,  word_size, alphabet_size, gv):
     # print names of clusters
     pd.DataFrame({"SAX":means.columns.values}).to_csv(locator.get_calibration_cluster('clusters_sax'), index=False)
 
-    gv.log('done - time elapsed: %(time_elapsed).2f seconds', time_elapsed=time.clock() - t0)
 
 def optimization_clustering_main(locator, data, start_generation, number_individuals,
                                  number_generations, building_name, gv):
@@ -149,12 +147,12 @@ def run_as_script():
     locator = inputlocator.InputLocator(scenario_path=scenario_path)
 
     #Options
-    optimize = True
-    multicriteria = True
-    plot_pareto = True
+    optimize = False
+    multicriteria = False
+    plot_pareto = False
     clustering = True
-    cluster_plot = True
-    building_names = ['M01']#['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09']#['B01']#['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09']
+    cluster_plot = False
+    building_names = ['B01']#['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09']#['B01']#['B01', 'B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B09']
     building_load = 'Ef_kWh'
     type_data = 'measured'
 
@@ -215,12 +213,12 @@ def run_as_script():
                             save_to_disc=save_to_disc,
                             optimal_individual= optimal_individual)
     if clustering:
-        name = 'M01'
+        name = 'B01'
         data = demand_CEA_reader(locator=locator, building_name=name, building_load=building_load,
                                  type=type_data)
         word_size = 9
         alphabet_size = 7
-        clustering_main(locator=locator, data=data, word_size=word_size, alphabet_size=alphabet_size, gv=gv)
+        clustering_main(locator=locator, data=data, word_size=word_size, alphabet_size=alphabet_size)
 
         if cluster_plot:
             show_benchmark = True
