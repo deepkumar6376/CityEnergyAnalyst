@@ -162,7 +162,7 @@ def run_as_script():
                                      type=type_data)
             start_generation = None  # or the number of generation to start from
             number_individuals = 16
-            number_generations = 100
+            number_generations = 50
             optimization_clustering_main(locator=locator, data=data, start_generation=start_generation,
                                          number_individuals=number_individuals, number_generations=number_generations,
                                          building_name=name, gv=gv)

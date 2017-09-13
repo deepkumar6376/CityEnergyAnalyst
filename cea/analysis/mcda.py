@@ -298,7 +298,7 @@ def mcda_cluster_main(input_path, what_to_plot, weight_fitness1, weight_fitness2
     #read data form pickle file:
     cp = pickle.load(open(input_path, "rb"))
     frontier = cp[what_to_plot]
-    individuals = [str(ind) for ind in frontier]
+    individuals = [ind for ind in frontier]
     fitness1, fitness2, fitness3 = map(np.array, zip(*[ind.fitness.values for ind in frontier]))
 
     #normalizaiton of weights
