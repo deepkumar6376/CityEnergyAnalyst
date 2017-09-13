@@ -23,7 +23,7 @@ def calc_spatio_temporal_visuals(locator, period):
     for i, building in enumerate(buildings):
         data = pd.read_csv(os.path.join(location, building+'_geometry.csv'))
         geometry = data.set_index('SURFACE')
-        solar = pd.read_csv(os.path.join(location, building+'_insolation_Whm2.csv'))
+        solar = pd.read_csv(os.path.join(location, building+'_insolation_Whm2.json'))
         surfaces = solar.columns.values
 
         for surface in surfaces:
