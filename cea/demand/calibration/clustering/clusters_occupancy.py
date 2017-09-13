@@ -1,40 +1,72 @@
 import pandas as pd
 import os
-from cea.demand.calibration.clustering.clustering_main import clustering_main
-
+from cea.demand.calibration.clustering.clustering_main import clustering_main, clusters_day_mean
+import cea.globalvar as gv
+import cea.inputlocator as inputlocator
+import seaborn
+import matplotlib.pyplot as plt
 
 data_folder_path = r'C:\Users\Jimeno\Desktop\data'
-locator =
+
+gv = gv.GlobalVariables()
+scenario_path = gv.scenario_reference
+locator = inputlocator.InputLocator(scenario_path=scenario_path)
 
 days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday','Sunday']
 for day in days:
+    output_file1= 'type_restaurant_Singapore_' + day + 'box_plot.png'
+    output_file2 = 'type_restaurant_Singapore_' + day + 'cluster.png'
+    output_path1 = os.path.join(locator.get_calibration_clustering_plots_folder(), output_file1)
+    output_path2 = os.path.join(locator.get_calibration_clustering_plots_folder(), output_file2)
     data = pd.read_csv(os.path.join(data_folder_path, 'type_restaurant_Singapore_' + day + '.csv'))
     columns = [str(x) for x in range(24)]
     data_matrix = data.as_matrix(columns=columns)
 
+    a = data_matrix.flatten()
+    ts = pd.Series(a, index=pd.date_range(start="2014-02-01", periods=len(a), freq="H"))
+    fig, ax = plt.subplots(figsize=(12, 5))
+    labelx = "Hour of the day"
+    labely = "frequency [%]"
+    ax.set_xlabel(labelx)
+    ax.set_ylabel(labely)
+    ax.set_title(day)
+    ax.set_ylim([0,100])
+    seaborn.boxplot(ts.index.hour, ts, ax=ax)
+    plt.rcParams.update({'font.size': 14})
+    plt.tight_layout()
+    plt.savefig(output_path1)
+    plt.close(fig)
+
     # calculate sax for timesieries data
-    word_size = 4
-    alphabet_size = 3
-    clustering_main(locator=locator, data=data, word_size=word_size, alphabet_size=alphabet_size)
-
-
+    word_size = 3
+    alphabet_size = 4
+    clustering_main(locator=locator, data=data_matrix, word_size=word_size, alphabet_size=alphabet_size)
 
     #plot
-    show_benchmark = True
+    show_benchmark = False
     save_to_disc = True
     show_in_screen = False
     show_legend = False
-    labelx = "Hour of the day"
-    labely = "Electrical load [kW]"
-    # input_path = demand_CEA_reader(locator=locator, building_name=name, building_load=building_load,
-    #                  type=type_data)
-    #
-    # input_path = pd.DataFrame(dict((str(key), value) for (key, value) in enumerate(input_path)))
 
     input_path = locator.get_calibration_cluster('clusters_mean')
-    output_path = os.path.join(locator.get_calibration_clustering_plots_folder(),
-                               "w_a_" + str(word_size) + "_" + str(alphabet_size) + "_building_name_" + name + ".png")
 
-    clusters_day_mean(input_path=input_path, output_path=output_path, labelx=labelx,
-                      labely=labely, save_to_disc=save_to_disc, show_in_screen=show_in_screen,
-                      show_legend=show_legend)  # , show_benchmark=show_benchmark)
+    data = pd.read_csv(input_path)
+
+    #create figure
+    fig = plt.figure(figsize=(12, 5))
+    ax = data.plot(grid=True, legend=show_legend)
+    ax.set_xlabel(labelx)
+    ax.set_ylabel(labely)
+    ax.set_title(day)
+    ax.set_ylim([0, 100])
+    if show_legend:
+        ax.legend(loc='best', prop={'size':12})
+
+    # get formatting
+    plt.rcParams.update({'font.size': 14})
+    plt.tight_layout()
+    if save_to_disc:
+        plt.savefig(output_path2)
+    if show_in_screen:
+        plt.show()
+    plt.close(fig)

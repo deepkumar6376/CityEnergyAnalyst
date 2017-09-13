@@ -19,7 +19,7 @@ def clusters_day_mean(input_path, output_path, labelx, labely, save_to_disc, sho
     data = pd.read_csv(input_path)
 
     #create figure
-    fig = plt.figure()
+    fig = plt.figure(figsize=(12, 5))
     ax = data.plot(grid=True, legend=show_legend)
     ax.set_xlabel(labelx)
     ax.set_ylabel(labely)
@@ -27,7 +27,7 @@ def clusters_day_mean(input_path, output_path, labelx, labely, save_to_disc, sho
         ax.legend(loc='best', prop={'size':12})
 
     # get formatting
-    plt.rcParams.update({'font.size': 24})
+    plt.rcParams.update({'font.size': 14})
     plt.tight_layout()
     if save_to_disc:
         plt.savefig(output_path)
