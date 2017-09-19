@@ -1,0 +1,65 @@
+# ==========================================================
+# = Solver Results                                         =
+# ==========================================================
+# ----------------------------------------------------------
+#   Problem Information
+# ----------------------------------------------------------
+Problem: 
+- Lower bound: -inf
+  Upper bound: inf
+  Number of objectives: 1
+  Number of constraints: 15
+  Number of variables: 14
+  Sense: unknown
+# ----------------------------------------------------------
+#   Solver Information
+# ----------------------------------------------------------
+Solver: 
+- Status: ok
+  Message: Ipopt 3.12.4\x3a Optimal Solution Found
+  Termination condition: optimal
+  Id: 0
+  Error rc: 0
+  Time: 0.210999965668
+# ----------------------------------------------------------
+#   Solution Information
+# ----------------------------------------------------------
+Solution: 
+- number of solutions: 1
+  number of solutions displayed: 1
+- Gap: None
+  Status: optimal
+  Message: Ipopt 3.12.4\x3a Optimal Solution Found
+  Objective:
+    OBJ:
+      Value: 1815.35620205
+  Variable:
+    E_carnot:
+      Value: 998.44591113
+    H_exfil:
+      Value: 0.250398220666
+    H_exhaust:
+      Value: 480.233856042
+    H_vent_supply:
+      Value: 174.371969532
+    Q_lat_vent:
+      Value: 9944.08995886
+    Q_sen_vent:
+      Value: 137.837989679
+    T_lm_lat:
+      Value: 284.688225835
+    T_lm_sen:
+      Value: 301.713307703
+    T_vent_supply:
+      Value: 1.12011035888
+    m_H2O_cond:
+      Value: 0.204018012408
+    m_dot_exhaust_dry:
+      Value: 9.9344495726
+    m_dot_vent_dry:
+      Value: 9.9344495726
+    w_indoor:
+      Value: 0.009331955451
+    w_vent_supply:
+      Value: 0.00652660393986
+  Constraint: No values
