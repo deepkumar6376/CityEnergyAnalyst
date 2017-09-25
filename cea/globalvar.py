@@ -42,8 +42,8 @@ class GlobalVariables(object):
         self.Es = 0.9 # franction of GFA that has electricity in every building
         # constant values for HVAC
         self.nrec_N = 0.75  # possible recovery
-        self.NACH_inf_non_occ = 0.2  # num air exchanges due to infiltration when no occupied
-        self.NACH_inf_occ = 0.5  # num air exchanges due to infiltration when occupied
+        #self.NACH_inf_non_occ = 0.2  # num air exchanges due to infiltration when no occupied
+        #self.NACH_inf_occ = 0.5  # num air exchanges due to infiltration when occupied
         self.C1 = 0.054  # assumed a flat plate heat exchanger (-)
         self.Vmax = 3  # maximum estimated flow in m3/s
         self.Pair = 1.2  # air density in kg/m3

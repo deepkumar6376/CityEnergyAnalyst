@@ -10,6 +10,7 @@ from __future__ import absolute_import
 
 import numpy as np
 import pandas as pd
+import os
 from cea.utilities.dbfreader import dbf_to_dataframe, dataframe_to_dbf
 import cea.inputlocator
 
@@ -330,10 +331,11 @@ def run_as_script(scenario_path=None, prop_thermal_flag=True, prop_architecture_
     made to this script (e.g. refactorings) do not stop the script from working and also that the results stay the same.
     """
     import cea.globalvar
-    gv = cea.globalvar.GlobalVariables()
-    if not scenario_path:
-        scenario_path = gv.scenario_reference
-    locator = cea.inputlocator.InputLocator(scenario_path=scenario_path)
+    if scenario_path and os.path.exists(scenario_path):
+        locator = cea.inputlocator.InputLocator(scenario_path=scenario_path)
+    else:
+        locator = cea.inputlocator.ReferenceCaseOpenLocator()
+
     properties(locator=locator, prop_architecture_flag=prop_architecture_flag,
                prop_hvac_flag=prop_hvac_flag, prop_comfort_flag=prop_comfort_flag,
                prop_internal_loads_flag=prop_internal_loads_flag)
